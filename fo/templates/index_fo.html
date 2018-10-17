@@ -1,0 +1,38 @@
+{% extends "base_generic_fo.html" %}
+{% load staticfiles %}
+{% block contenu %}
+ <div id="starting">
+      <div class="container">
+        <div class="row">
+          <h1>List of Articles
+          <button class="btn btn-success">ADD ELEVE</button>
+          </h1>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">nom</th>
+                <th scope="col">prenom</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="eleve in eleves">
+                <th scope="row">${eleve.nom}</th>
+                <td>${eleve.prenom}</td>
+                <td>
+                  <button class="btn btn-info" v-on:click="getArticle(article.article_id)">Edit</button>
+                  <button class="btn btn-danger" v-on:click="deleteArticle(article.article_id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="loading" v-if="loading===true">Loading&#8230;</div>
+    </div>
+{% endblock %}
+{% block vue %}
+<script src="{% static 'index_fo.src.js' %}"></script>
+{% endblock %}
+
+</html>
