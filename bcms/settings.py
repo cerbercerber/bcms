@@ -47,7 +47,7 @@ SECRET_KEY = 'o73wnuge=msok8z_t%nq_8-$e-#ym1hj*i36c+aje8ch@j)4dl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['cerber.pythonanywhere.com/',]
+ALLOWED_HOSTS = ['cerber.pythonanywhere.com',]
 
 
 # Application definition

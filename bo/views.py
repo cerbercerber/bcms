@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 
 from django.template import loader
-from _overlapped import NULL
+#from _overlapped import NULL
 
 from .models import *
 
