@@ -166,4 +166,5 @@ STATIC_URL = '/static/'
 #pythonanywhere
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
+    '/home/cerber/bcms/bo/static/',
 ]
