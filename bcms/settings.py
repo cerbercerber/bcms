@@ -47,7 +47,7 @@ SECRET_KEY = 'o73wnuge=msok8z_t%nq_8-$e-#ym1hj*i36c+aje8ch@j)4dl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://cerber.pythonanywhere.com/',]
 
 
 # Application definition
@@ -63,7 +63,7 @@ INSTALLED_APPS = [
    # 'backoffice.apps.BackofficeConfig',
     
     'bo.apps.BoConfig',
-    'fo.apps.FoConfig',
+    #'fo.apps.FoConfig',
      
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,7 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'rest_framework'
+    #'rest_framework'
 ]
 
 MIDDLEWARE = [

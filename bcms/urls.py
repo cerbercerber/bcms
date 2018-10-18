@@ -18,7 +18,7 @@ from django.urls import path
 from django.conf.urls import include
 
 
-from fo.routers import router
+#from fo.routers import router
 
 from bo import views as bo_views
 
@@ -33,6 +33,6 @@ urlpatterns = [
     #path('admin/', admin.site.urls),  
     path('accounts/', include('django.contrib.auth.urls')),   
     #path('polls/', include('polls.urls')),    
-    path('api/', include(router.urls)),
-    path('fo/', include('fo.urls')),
+    #path('api/', include(router.urls)),
+    #path('fo/', include('fo.urls')),
 ]
