@@ -1,0 +1,57 @@
+{% extends "bo/base_generic.html" %}
+
+{% block espace %}
+Espace élève
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-info">
+<p>Bonjour vous etes connecté en tant que :</p>
+</div>
+<table class="table">
+ <tr>
+     
+ <td>Nom d'utilisateur</td>
+     
+ <td>{{ user }}</td>
+     
+ </tr>
+ <tr>
+     
+ <td>Groupe(s)</td>
+     
+ <td>
+ {% for e in ug %}
+{{ e }}
+{% endfor %}</td>
+    
+</tr>      
+</table>
+<div class="alert alert-info">
+<p>Voici vos inscriptions :</p>
+</div>
+<table class="table">
+ {% for ge in groupeeleve %}    
+<tr>
+ <td>
+ {{ ge.groupe.ue.nom }}
+</td>
+<td>
+{{ ge.groupe.nom }}
+</td>
+<td>
+{% for geens in ge.groupe.enseignants.all %} 
+{{ geens.nom }} {{ geens.prenom }}, 
+{% endfor %}
+</td>
+</tr>  
+{% endfor %}       
+</table>
+
+{{ groupeeleve }}
+
+{% endblock %}
+
+
+
+

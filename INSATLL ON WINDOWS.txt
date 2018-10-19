@@ -1,0 +1,30 @@
+install python
+
+creer virtual env(mkvirtualenv bcms ---repertoire  creer dans PyhtonBertrand)
+
+workon myproject (workon bcms)
+
+install django (pip install django)
+
+python manage.py runserver 0:8083(launch server se placer dans virtualenv)
+
+create project django-admin.py startproject mysite (bcms)
+
+mysite/
+    manage.py
+    mysite/
+        __init__.py
+        settings.py
+        urls.py
+        wsgi.py
+
+
+python manage.py createsuperuser (creer superuser)
+
+python manage.py migrate (creer table python auth depuis "settings.py" )
+
+lier app au project "settings.py"
+INSTALLED_APPS = [
+    'polls.apps.PollsConfig',
+
+python manage.py makemigrations polls

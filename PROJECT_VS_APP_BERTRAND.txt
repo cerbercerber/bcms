@@ -1,0 +1,14 @@
+https://stackoverflow.com/questions/7019070/cannot-start-any-django-app
+
+9
+down vote
+I was confused as well, until I realized that a Django project is a container for applications; this sequence makes it a bit clearer:
+
+# first create a Project (container).
+django-admin.py startproject Project
+
+# create multiple apps
+cd Project
+python manage.py startapp polls
+python manage.py startapp hello
+...

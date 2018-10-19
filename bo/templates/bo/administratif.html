@@ -1,0 +1,509 @@
+{% extends "bo/base_generic.html" %}
+{% load staticfiles %}
+{% block espace %}
+Espace administratif
+{% endblock %}
+{% block content %}
+<!-- AJAX EDT-->
+<input type="hidden" id="admmod" value="{{ modele }}">
+<input type="hidden" id="admoid" value="{{ oid }}">
+
+<!-- MODAL COURS -->
+<!-- Modal -->
+<div class="modal fade" id="modalResa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      {{ coursform.instance.id }}
+        {{ coursform }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-link">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--MENU -->
+<form method="post" name="formdelgroupe" id="formdelgroupe">
+ {% csrf_token %}
+ {% if modele is None %}
+ <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'bo:administratif'  %}">Accueil</a></li>
+    </ol>
+</nav>
+ <div class="row" style="height:150px">
+ <div class="card col-sm">
+    <div class="card-body align-items-center d-flex justify-content-center">
+  <a href="{% url 'bo:administratif'  %}/diplome" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Diplome</a>
+  </div>
+ </div>
+  <div class="card col-sm">
+   <div class="card-body align-items-center d-flex justify-content-center">
+  <a href="{% url 'bo:administratif'  %}/UE" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;UE</a> 
+  </div> 
+  </div>
+   <div class="card col-sm"> 
+    <div class="card-body align-items-center d-flex justify-content-center">
+  <a href="{% url 'bo:administratif'  %}/groupe" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Groupe</a>
+  </div>
+  </div>
+  </div>
+  <div class="row" style="height:150px">
+ <div class="card col-sm">
+  <div class="card-body align-items-center d-flex justify-content-center">
+  <a href="{% url 'bo:administratif' %}/eleve " class="btn btn-link"><i class="fas fa-users"></i>&nbsp;&nbsp;&nbsp;Eleve</a> 
+  </div>
+  </div>
+  <div class="card col-sm">
+   <div class="card-body align-items-center d-flex justify-content-center">
+  <a href="{% url 'bo:administratif'  %}/enseignant" class="btn btn-link"><i class="fas fa-users"></i>&nbsp;&nbsp;&nbsp;Enseignant</a>
+  </div>
+  </div>
+ </div>
+ {% endif %}
+ {% if modele is not None %}
+ <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'bo:administratif'  %}">Accueil</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'bo:administratif'  %}/{{modele}}">{{ modele }}</a></li>
+    {% if oid is  None %}<li class="breadcrumb-item active" aria-current="page">Liste</li> {% endif %}
+    {% if oid is not None %}<li class="breadcrumb-item active" aria-current="page">{{ modeleitem }}</li> {% endif %}
+  </ol>
+</nav>
+<div class="card" id="groupesdt_list" {% if oid is not None or mode == "add" %} style="display:none" {% endif %}>
+<div class="card-header">
+<label class="text-capitalize">Liste des {{modele}}</label>&nbsp;&nbsp;&nbsp;
+</div>
+<div class="card-body">
+
+<!--{{ formFilter }} -->
+<div class="card">
+<div class="card-body">
+<div class="row">
+{% for field in formFilter %}
+<div class="col-sm-1"><label>{{ field.label }}</label></div><div class="col-sm-3">{{ field}}</div>
+{% endfor %}
+</div>
+</div>
+<div class="card-header">
+<a class="btn btn-link" href="{% url 'bo:administratif'  %}/{{modele}}/add">Ajouter</a>
+<!-- <span class="btn btn-link" id="groupesdt_add">Ajouter</span> --><input type="submit" class="btn btn-link" name="Supprimer" value="Supprimer"> <div class="float-sm-right"><div id="groupesdt_newfilter"></div></div>
+</div>
+</div>
+ 
+<!------------->
+<!-- groupes -->
+<!------------->
+{% if modele == "groupe" %}
+<table class="table table-hover dt" id="groupesdt">
+<thead>
+<tr class="h">
+<th>
+<input type="checkbox" id="groupesdt_delall">
+</th>
+<th>Groupe
+</th>
+<th>Enseignant(s)
+</th>
+<th>Nb. élèves</th>
+ </tr>   
+</thead>
+<tbody>
+ {% for ge in modeleliste %}    
+<tr>
+<td>
+<input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}>
+</td>
+ <td>
+ <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.ue }} groupe {{ge.nom}}</a>
+</td>
+<td>
+{% for hi in ge.enseignants.all %}
+{{hi}}
+{% endfor %}
+</td>
+<td>
+{{ ge.get_nb_eleves }}
+</td>
+</tr>  
+{% endfor %}    
+</tbody>   
+</table> 
+<!------------->
+<!-- eleves -->
+<!------------->
+{% elif modele == "eleve" %}
+<table class="table table-hover dt" id="groupesdt">
+<thead>
+<tr class="h">
+<th>
+<input type="checkbox" id="groupesdt_delall">
+</th>
+<th>Nom
+</th>
+<th>Prénoms
+</th>
+<th>Email
+</th>
+<th>Diplome
+</th>
+<th>Groupe(s)</th>
+ </tr>   
+</thead>
+<tbody>
+ {% for ge in modeleliste %}    
+<tr class="h">
+<td>
+<input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}>
+</td>
+ <td>
+ <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a>
+</td>
+<td>
+{{ ge.prenom }}
+</td>
+<td>
+{{ ge.email }}
+</td>
+<td>
+{{ ge.get_diplomes }}
+</td>
+<td>
+{{ge.get_groupes}}
+</td>
+</tr>  
+{% endfor %}    
+</tbody>   
+</table> 
+<!--------------->
+<!--enseignant--->
+<!--------------->
+{% elif modele == "enseignant" %}
+<table class="table table-hover dt" id="groupesdt">
+<thead>
+<tr class="h">
+<th>
+<input type="checkbox" id="groupesdt_delall">
+</th>
+<th>Nom
+</th>
+<th>Prénoms
+</th>
+<th>Email
+</th>
+<th>Groupe(s)</th>
+ </tr>   
+</thead>
+<tbody>
+ {% for ge in modeleliste %}    
+<tr>
+<td>
+<input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}>
+</td>
+ <td>
+ <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a>
+</td>
+<td>
+{{ ge.prenom }}
+</td>
+<td>
+{{ ge.email }}
+</td>
+<td>
+{{ge.get_groupes}}
+</td>
+</tr>  
+{% endfor %}    
+</tbody>   
+</table> 
+<!--------------->
+<!--diplome--->
+<!--------------->
+{% elif modele == "diplome" %}
+<table class="table table-hover dt" id="groupesdt">
+<thead>
+<tr class="h">
+<th>
+<input type="checkbox" id="groupesdt_delall">
+</th>
+<th>Nom
+</th>
+<th>Année scolaire
+</th>
+<th>Nb. élèves
+</th>
+ </tr>   
+</thead>
+<tbody>
+ {% for ge in modeleliste %}    
+<tr>
+<td>
+<input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}>
+</td>
+ <td>
+ <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a>
+</td>
+<td>
+{{ ge.anneescolaire }}
+</td>
+<td>
+{{ge.get_nb_eleves}}
+</td>
+</tr>  
+{% endfor %}    
+</tbody>   
+</table> 
+<!--------------->
+<!--ue--->
+<!--------------->
+{% elif modele == "UE" %}
+<table class="table table-hover dt" id="groupesdt">
+<thead>
+<tr class="h">
+<th>
+<input type="checkbox" id="groupesdt_delall">
+</th>
+<th>Nom
+</th>
+<th>Descriptif
+</th>
+<th>Période</th>
+<th>Groupe(s)</th>
+<th>Diplome</th>
+ </tr>   
+</thead>
+<tbody>
+ {% for ge in modeleliste %}    
+<tr>
+<td>
+<input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}>
+</td>
+ <td>
+ <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge }}</a>
+</td>
+<td>
+{{ ge.descriptif }}
+</td>
+<td>{{ge.periode}}</td>
+<td>
+{{ge.get_groupes}}
+</td>
+<td>{{ge.periode.diplome}}</td>
+</tr>  
+{% endfor %}    
+</tbody>   
+</table> 
+{% endif %}
+</div>
+</div>
+</form> 
+<!-- formulaire ajout --> 
+<form method="post" name="formgroupe" id="groupesdt_form" {% if oid is None and mode != "add" %} style="display:none" {% endif %}
+{% if oid is not None %}
+action="{% url 'bo:administratif' %}/{{modele}}/{{oid}}"
+{% endif %}
+{% if oid is None %}
+action="{% url 'bo:administratif' %}/{{modele}}"
+{% endif %}
+>
+<div class="card">
+<div class="card-header">
+<label>{% if oid is None %} Ajouter {% endif %} {% if oid is not None %} Modifier {% endif %} un {{modele}} {{modeleitem}}</label>
+</div>
+<div class="panel-content">
+<ul class="nav nav-tabs" id="tabmodif">
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab1">Informations</a></li>
+  {% for fstemp in listefs %}
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab{{fstemp.numtab}}">{{ fstemp.titre }}</a></li>
+  {% endfor %}
+   {% for listefstemp in listelistefs %}
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab{{listefstemp.numtab}}">{{ listefstemp.titre }}</a></li>
+  {% endfor %}
+  {% if oid is not None %} 
+   <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabcalendar">Calendrier</a></li>
+   {% endif %}
+</ul>
+<!-- tab div -->
+<div class="tab-content">
+<div id="tab1" class="tab-pane fade in">
+<div class="card"  >
+<div class="card-header">
+{% if oid is None %} 
+    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+     {% endif %} 
+    {% if oid is not None %} 
+    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+     {% endif %}       
+<a class="btn btn-link" id="groupesdt_retour" href="{% url 'bo:administratif' %}/{{modele}}">Retour</a>
+</div>
+<div class="card-body">
+
+    {% csrf_token %}
+    <div class="form-group">
+    <!-- {{ formmodele }} -->
+    {% for field in formmodele %}
+    <div class="fieldWrapper">
+    <div class="row">
+        {{ field.errors }}
+        <div class="col-sm-2">{{ field.label_tag }}</div><div class="col-sm-4">{{ field }}</div>
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+     </div>
+    </div>
+{% endfor %}
+    </div>
+        
+</div>
+</div>
+<!-- fin tab -->
+</div>
+
+{% for fstemp in listefs %}
+
+<div id="tab{{fstemp.numtab}}" class="tab-pane fade in">
+<div class="card" {% if oid is None %} style="display:none" {% endif %}>
+<div class="card-header">
+<input type="submit" value="Enregistrer" name="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}"   class="btn btn-link"/>
+</div>
+<div class="panel-body">  
+  {{ fstemp.formset.management_form }}
+    {% for form in fstemp.formset %}
+        <div class="row">
+           {% for field in form %}
+           
+           {% if field.is_hidden %}
+           {{field}}   
+           {% else %}         
+           <div class="col-sm-3">
+           {% if field.label != "Delete"  and  field.label != "Supprimer" %} <label for="{{field.id_for_label}}"> {{field.label}} </label>   {% endif %}
+           
+           {% if field.label == "Delete" or  field.label == "Supprimer"%}
+           
+                {% if form.id.value %}  
+           <a  href="#" class="btn btn-link supp" checkboxtosupp="{{field.id_for_label}}" buttontoclick="Enregistrer{{fstemp.numtab}}" name="rr" >Supprimer</a>
+                {% endif %}
+           {% endif %}
+           {{field}}   
+           </div>
+           {% endif %}
+           <!-- champ statics -->
+           {% if modele == 'UE' %}
+            <div class="col-sm-1">  
+                          
+            {% if field.label == 'Id' %}          
+           
+           {{ form.instance.get_nb_eleves }}          
+                   
+           {% endif %}
+           </div>           
+           {% endif %} 
+           
+            {% if modele == 'eleve' %}
+            <div class="col-sm-1">                                  
+           {{ form.instance.groupe.ue.periode.diplome.anneescolaire }}                           
+           </div>           
+           {% endif %} 
+           {% endfor %}
+        </div>
+                 
+        
+    {% endfor %}
+</div>
+</div>
+</div>
+
+{% endfor %}
+
+
+
+
+{% for listefstemp in listelistefs %}
+<div id="tab{{listefstemp.numtab}}" class="tab-pane fade in">
+<div class="card" {% if oid is None %} style="display:none" {% endif %} >
+<div class="card-header">
+<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>
+</div>
+<div class="card-body">
+ {% for fs in listefstemp.listformset %}  
+ <h3> {{fs.titre}}</h3>
+ {{fs.formset.management_form}}
+     {% for form in fs.formset %}
+        <div class="row">
+           {% for field in form %}
+           
+           {% if field.is_hidden %}
+           {{field}}   
+           {% else %}
+           <div class="col-sm-2">
+           {% if field.label != "Delete" and  field.label != "Supprimer" %} <label for=" {{field.name}}"> {{field.label}} </label>  {% endif %}
+           </div>
+           <div class="col-sm-4">
+           {% if field.label == "Delete" or  field.label == "Supprimer" %}
+         
+           <a  href="#" class="btn btn-link supp" checkboxtosupp="{{field.id_for_label}}" buttontoclick="Enregistrer{{listefstemp.numtab}}" name="rr" >Supprimer</a>
+           
+           {% endif %}
+           {{field}}   
+           </div>
+           {% endif %}
+           {% endfor %}
+        </div>
+                 
+        
+    {% endfor %}
+{% endfor %}
+</div>
+</div>
+</div> 
+
+{% endfor %}
+
+
+{% if oid is not None %} 
+<div id="tabcalendar" class="tab-pane fade in">
+<div id="panelcalendar" class="card">
+<div class="card-header">
+<div id="panelheadingcalendar">
+</div>
+</div>
+<div class="card-body">
+<div id="calendart"></div>
+</div>
+</div>
+<div class="card-body" id="loading" style="display: none">
+<img src="{% static 'bo/Preloader_1.gif' %}"  id="gif" style="display: block; margin: 0 auto;">
+</div>
+</div>
+{% endif %}
+
+<!-- end tab-content--->
+</div>
+
+<!-- end panel content -->
+</div>
+</div>
+{% endif %}
+</form>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+

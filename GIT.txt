@@ -1,0 +1,78 @@
+-----------------------------
+GIT ON PC
+----------------------------
+
+install git
+
+create repository
+	git init
+
+
+$ git config --global user.name "Votre nom"
+$ git config --global user.email you@exemple.com
+
+.gitignore
+
+git add --all .
+$ git commit -m "My Django Girls app, first commit"
+
+----------------
+github
+---------------
+
+$ git remote add origin https://github.com/cerbercerber/bcms.git
+$ git push -u origin master
+
+----------------
+pythonanywhere
+---------------
+
+git clone https://github.com/cerbercerber/bcms.git
+git pull https://github.com/cerbercerber/bcms.git master
+
+---------------
+virtualenv
+--------------
+
+mkvirtualenv premenv--python=/usr/bin/python3.6
+workon premenv
+
+pip install django==2.0.5
+
+
+------------
+DJANGO
+------------
+
+ALLOWED HOST
+
+--------------
+SQLLITE
+-------------
+
+désactiver FormFilter bug !!!!!!!migrate
+
+makemigrations
+migrate
+createsuperuser
+
+
+--------
+STATIC
+-------
+
+STATIC_ROOT = "/home/myusername/myproject/static"
+
+pythonX.Y manage.py collectstatic
+
+STATIC_URL='/static/'
+
+Set up a static files mapping
+
+Go to the Web tab on the PythonAnywhere dashboard
+Go to the Static Files section
+Enter the same URL as STATIC_URL in the url section (typically, /static/)
+Enter the path from STATIC_ROOT into the path section (the full path, including /home/username/etc)
+Then hit Reload and test your static file mapping by going to retrieve a known static file.
+
+Eg, if you have a file at /home/myusername/myproject/static/css/base.css, go visit http://www.your-domain.com/static/css/base.css

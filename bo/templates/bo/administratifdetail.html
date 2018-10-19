@@ -1,0 +1,233 @@
+{% extends "bo/administratifbase.html" %}
+{% load staticfiles %}
+{% block liste %}
+
+
+<!-- formulaire ajout --> 
+<form method="post" name="formgroupe" id="groupesdt_form" {% if oid is None and mode != "add" %} style="display:none" {% endif %}
+{% if oid is not None %}
+action="{% url 'bo:administratif' %}/{{modele}}/{{oid}}"
+{% endif %}
+{% if oid is None %}
+action="{% url 'bo:administratif' %}/{{modele}}/add"
+{% endif %}
+>
+<div class="card">
+<div class="card-header">
+<label>{% if oid is None %} Ajouter {% endif %} {% if oid is not None %} Modifier {% endif %} un {{modele}} {{modeleitem}}</label>
+</div>
+<div class="panel-content">
+<ul class="nav nav-tabs" id="tabmodif">
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab1">Informations</a></li>
+  {% for fstemp in listefs %}
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab{{fstemp.numtab}}">{{ fstemp.titre }}</a></li>
+  {% endfor %}
+   {% for listefstemp in listelistefs %}
+  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab{{listefstemp.numtab}}">{{ listefstemp.titre }}</a></li>
+  {% endfor %}
+  {% if oid is not None %} 
+   <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabcalendar">Calendrier</a></li>
+   {% endif %}
+</ul>
+<!-- tab div -->
+<div class="tab-content">
+<div id="tab1" class="tab-pane fade in">
+<div class="card"  >
+<div class="card-header">
+{% if oid is None %} 
+    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+     {% endif %} 
+    {% if oid is not None %} 
+    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+     {% endif %}       
+<a class="btn btn-link" id="groupesdt_retour" href="{% url 'bo:administratif' %}/{{modele}}">Retour</a>
+</div>
+<div class="card-body">
+
+    {% csrf_token %}
+    <div class="form-group">
+    <!-- {{ formmodele }} -->
+    {% for field in formmodele %}
+    <div class="fieldWrapper">
+    <div class="row">
+        {{ field.errors }}
+        <div class="col-sm-2"><label for="{{field.id_for_label}}"> {{field.label}} {% if field.field.required %} <span class="text-danger"> * </span> {% endif %} </label></div><div class="col-sm-4">{{ field }}</div>
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+     </div>
+    </div>
+{% endfor %}
+    </div>
+        
+</div>
+</div>
+<!-- fin tab -->
+</div>
+
+{% for fstemp in listefs %}
+
+<div id="tab{{fstemp.numtab}}" class="tab-pane fade in">
+<div class="card" {% if oid is None %} style="display:none" {% endif %}>
+<div class="card-header">
+<input type="submit" value="Enregistrer" name="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}"   class="btn btn-link"/>
+</div>
+<div class="card-body">
+  
+  {{ fstemp.formset.management_form }}
+    {% for form in fstemp.formset %}
+        <div class="card">
+            <div class="card-header">
+            {{ form.instance.nommodele }} {{ forloop.counter }}
+            </div>
+            <div class="card-body">
+            <div class="row">
+           {% for field in form %}
+           
+           {% if field.is_hidden %}
+           {{field}}   
+           {% else %}         
+           <div class="col-sm-3">
+           {% if field.label != "Delete"  and  field.label != "Supprimer" %} <label for="{{field.id_for_label}}"> {{field.label}} {% if field.field.required %} <span class="text-danger"> * </span> {% endif %} </label>   {% endif %}
+           
+           {% if field.label == "Delete" or  field.label == "Supprimer"%}
+           
+                {% if form.id.value %} 
+                {% if form.instance.nommodeledb %} 
+                 {% if modele in form.instance.nommodeledb %}
+            <a  href="{% url 'bo:administratif' %}/{{form.instance.nommodeledb2}}" class="btn btn-link" name="detlink" >Détails2</a> 
+            {% else %}
+           <a  href="{% url 'bo:administratif' %}/{{form.instance.nommodeledb}} " class="btn btn-link" name="detlink" >Détails</a> 
+                {% endif %} 
+                {% endif %}    
+           <a  href="#" class="btn btn-link supp" checkboxtosupp="{{field.id_for_label}}" buttontoclick="Enregistrer{{fstemp.numtab}}" name="rr" >Supprimer</a>
+                {% endif %}
+           {% endif %}
+           {{field}}   
+           </div>
+           {% endif %}
+           <!-- champ statics -->
+           {% if modele == 'UE' %}
+            <div class="col-sm-1">  
+                          
+            {% if field.label == 'Id' %}          
+           
+           {{ form.instance.get_nb_eleves }}          
+                   
+           {% endif %}
+           </div>           
+           {% endif %} 
+           
+            {% if modele == 'eleve' %}
+            <div class="col-sm-1">                                  
+           {{ form.instance.groupe.ue.periode.diplome.anneescolaire }}                           
+           </div>           
+           {% endif %} 
+           {% endfor %}
+        </div>
+        </div>
+        </div>         
+        
+    {% endfor %}
+</div>
+</div>
+</div>
+
+{% endfor %}
+
+
+
+
+{% for listefstemp in listelistefs %}
+<div id="tab{{listefstemp.numtab}}" class="tab-pane fade in">
+<div class="card" {% if oid is None %} style="display:none" {% endif %} >
+<div class="card-header">
+<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>
+</div>
+<div class="card-body">
+ {% for fs in listefstemp.listformset %} 
+  <div class="card">
+            <div class="card-header">
+            {{fs.titre}}
+            </div>
+            <div class="card-body"> 
+ {{fs.formset.management_form}}
+     {% for form in fs.formset %}
+        <div class="row">
+           {% for field in form %}
+           
+           {% if field.is_hidden %}
+           {{field}}   
+           {% else %}
+           <div class="col-sm-2">
+           {% if field.label != "Delete" and  field.label != "Supprimer" %} <label for=" {{field.name}}"> {{field.label}} {% if field.field.required %} <span class="text-danger"> * </span> {% endif %} </label>  {% endif %}
+           </div>
+           <div class="col-sm-4">
+           {% if field.label == "Delete" or  field.label == "Supprimer" %}
+             {% if form.id.value %} 
+             {% if form.instance.nommodeledb %}
+             {% if modele in form.instance.nommodeledb %}
+            <a  href="{% url 'bo:administratif' %}/{{form.instance.nommodeledb2}}" class="btn btn-link" name="detlink" >Détails2</a> 
+            {% else %}
+           <a  href="{% url 'bo:administratif' %}/{{form.instance.nommodeledb}}" class="btn btn-link" name="detlink" >Détails</a>
+           {% endif%} 
+           {% endif%} 
+           <a  href="#" class="btn btn-link supp" checkboxtosupp="{{field.id_for_label}}" buttontoclick="Enregistrer{{listefstemp.numtab}}" name="rr" >Supprimer</a>
+             {% endif %}
+           {% endif %}
+           {{field}}   
+           </div>
+           {% endif %}
+           {% endfor %}
+        </div>
+                 
+        
+    {% endfor %}
+    </div>
+    </div>
+{% endfor %}
+</div>
+</div>
+</div> 
+
+{% endfor %}
+
+
+{% if oid is not None %} 
+<div id="tabcalendar" class="tab-pane fade in">
+<div id="panelcalendar" class="card">
+<div class="card-header">
+<div id="panelheadingcalendar">
+</div>
+</div>
+<div class="card-body">
+<div id="calendart"></div>
+</div>
+</div>
+<div class="card-body" id="loading" style="display: none">
+<img src="{% static 'bo/Preloader_1.gif' %}"  id="gif" style="display: block; margin: 0 auto;">
+</div>
+</div>
+{% endif %}
+
+<!-- end tab-content--->
+</div>
+
+<!-- end panel content -->
+</div>
+</div>
+
+</form>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
