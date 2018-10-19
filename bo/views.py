@@ -86,7 +86,7 @@ def eleve(request):
         if request.user.groups.filter(name='eleve').exists() :
             user=request.user        
             groupeeleve=Inscription.objects.filter(eleve__nom__contains=user.username)
-            return render(request, 'eleve.html',{"groupeeleve" : groupeeleve,'user':user,"ug":user.groups.all()}) 
+            return render(request, 'bo/eleve.html',{"groupeeleve" : groupeeleve,'user':user,"ug":user.groups.all()}) 
     return deconnexion(request)
 
 def enseignant(request):
@@ -94,7 +94,7 @@ def enseignant(request):
         if request.user.groups.filter(name='enseignant').exists() :
             user=request.user        
             groupeenseignant=Groupe.objects.filter(enseignants__nom__contains=user.username)
-            return render(request, 'enseignant.html',{"groupeenseignant" : groupeenseignant,'user':user,"ug":user.groups.all()}) 
+            return render(request, 'bo/enseignant.html',{"groupeenseignant" : groupeenseignant,'user':user,"ug":user.groups.all()}) 
     return deconnexion(request)
 
 
@@ -192,7 +192,7 @@ def edtresa(request,idcours):
       else :         
          cf=CoursForm
               
-      return render(request, 'administratifresa.html', {"coursform":cf, "idcours":idcours})  
+      return render(request, 'bo/administratifresa.html', {"coursform":cf, "idcours":idcours})  
   
           
              
@@ -374,7 +374,7 @@ def administratifliste(request,modele=None):
             if not filterok :        
                 modeleliste=model.objects.all()  
                 
-            return render(request, 'administratifliste.html',{                                                                                                                                                                        
+            return render(request, 'bo/administratifliste.html',{                                                                                                                                                                        
                                                          "modele":modele,
                                                          "modeleliste" : modeleliste,
                                                          "formFilter":formFilter,                                                                                                                                                                                                                         
@@ -649,7 +649,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                 
             
            
-            return render(request, 'administratifdetail.html',{                                                                                                                                                                        
+            return render(request, 'bo/administratifdetail.html',{                                                                                                                                                                        
                                                          "oid" : oid,"modele":modele,"modeleitem":modeleitem,"mode":mode,
                                                          "formmodele" : formmodele,
                                                          "listefs":listefs,
@@ -936,7 +936,7 @@ def administratif(request,oid=None,modele=None,mode=None):
                 
             
            
-            return render(request, 'administratif.html',{                                                                                                                                                                        
+            return render(request, 'bo/administratif.html',{                                                                                                                                                                        
                                                          "oid" : oid,"modele":modele,"modeleitem":modeleitem,"mode":mode,
                                                          "formmodele" : formmodele,"modeleliste" : modeleliste,
                                                          "formFilter":formFilter,  
@@ -1011,7 +1011,7 @@ def index(request):
             # Redirect to a success page.
             #...
         else:
-            return render(request, 'index.html',{"error":"oui"})
+            return render(request, 'bo/index.html',{"error":"oui"})
         # Return an 'invalid login' error message.
       #...
     else :
@@ -1020,6 +1020,6 @@ def index(request):
      #  latest_question_list = Question.objects.order_by('-pub_date')[:6]
     #context = {'latest_question_list': latest_question_list}
     #context="toto";
-        return  render(request, 'index.html')
+        return  render(request, 'bo/index.html')
 
 # Create your views here.
