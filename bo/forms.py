@@ -27,7 +27,6 @@ class GroupeForm(BasicForm):
       
 class GroupeFormFilter (forms.Form):
         
-        '''
          choicesens=[[0, 'Tous']] + [ (d.id, str(d)) for d in Enseignant.objects.all()]
          enseignantsfilter= forms.ChoiceField(choices=choicesens, label="Enseignant",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
@@ -39,7 +38,7 @@ class GroupeFormFilter (forms.Form):
          ue__periode__diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
         
-        '''
+    
                         
 
   
@@ -51,7 +50,7 @@ class EleveForm(BasicForm):
 
 class EleveFormFilter (forms.Form):
         
-    '''
+    
          choicesdip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          choicesgroupes=[[0, 'Tous']] + [ (d.id, str(d)) for d in Groupe.objects.all()]
          diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
@@ -59,7 +58,7 @@ class EleveFormFilter (forms.Form):
          #groupefilter=forms.ChoiceField(choices=choicesgroupes, label="Groupe",                                      
          #                                widget=forms.Select(attrs={'class': 'filter'}))
          
-    '''    
+         
     
 
 
@@ -114,7 +113,7 @@ class UEForm(BasicForm):
 
 class UEFormFilter (forms.Form):
         
-    '''
+    
          choicedip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          periode__diplomefilter= forms.ChoiceField(choices=choicedip, label="Diplome",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
@@ -122,7 +121,7 @@ class UEFormFilter (forms.Form):
          periodefilter= forms.ChoiceField(choices=choiceper, label="Période",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))  
         
-    '''   
+        
         
         
 class DiplomeForm(BasicForm):
@@ -132,14 +131,12 @@ class DiplomeForm(BasicForm):
 
         
 class DiplomeFormFilter (forms.Form):
-     
-     '''   
+        
          choiceannsco=[[0, 'Tous']] + [ (d.id, str(d)) for d in AnneeScolaire.objects.all()]
          anneescolairefilter= forms.ChoiceField(choices=choiceannsco, label="Année scolaire",                                      
                                          widget=forms.Select(attrs={'class': 'filter'})
                                          )
-                                         
-     '''                             
+                                  
                                          
                           
 

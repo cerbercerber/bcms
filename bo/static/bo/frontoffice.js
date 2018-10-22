@@ -73,6 +73,16 @@ function dropresize(ancienevent)
 $("document").ready(function(e)
 {
 
+$(".supplist").on('click',function(u){
+    
+    if ($(this).closest('tr').find(':checkbox').prop('checked'))
+        $(this).closest('tr').find(':checkbox').prop('checked', false);
+    else
+        $(this).closest('tr').find(':checkbox').prop('checked', true);
+        
+    $("#supplisteall").click();
+});
+
 //asterisk requiered
 /*
 $('input[required]').each(function(index){

@@ -273,6 +273,9 @@ def saveFormset(request,formset):
     if formset.is_valid():
             try:                                          
                 formset.save()
+            except ValueError as e:
+                   messages.error(request,formset.prefix+" : "+ str(e))                   
+                   return False  
             except ProtectedError as e:
                         #messages.error(request, 'Impossible de supprimer cet objet '+ str(type(e))+" : "+str(e))
                         messerror=" ( "
@@ -283,9 +286,9 @@ def saveFormset(request,formset):
                         return False
             
             
-            
-            messages.success(request, ' Enregistrement réussi')
-            return True
+            else :
+                messages.success(request, formset.prefix +' Enregistrement réussi')
+                return True
             '''
             for tempform in formset.forms :
                 numformset=' '.join(filter(lambda x: x.isdigit(), tempform.prefix))
@@ -554,7 +557,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     
                     InscriptionFormSet = inlineformset_factory(Eleve, Inscription, fields=('groupe',),form=InscriptionForm)  
                     for annsco in AnneeScolaire.objects.all() :
-                                tempprefix="groupesel" +str(annsco.id)
+                                tempprefix="inscriptions" +str(annsco.id)
                                 if  request.POST.get('Enregistrer3')  :
                                     formsethtmltemp = InscriptionFormSet(request.POST,instance=grfound,prefix=tempprefix,queryset=Inscription.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))
                                     if saveFormset(request,formsethtmltemp):                     

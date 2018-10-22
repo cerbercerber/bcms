@@ -179,6 +179,14 @@ class Inscription(models.Model):
         return 'eleve/'+str(self.eleve.id)
     def nommodeledb2(self):
         return 'groupe/'+str(self.groupe.id)
+    def save(self, *args, **kwargs):
+    # Check how the current values differ from ._loaded_values. For example,
+    # prevent changing the creator_id of the model. (This example doesn't
+    # support cases where 'creator_id' is deferred).
+        nbinscr=Inscription.objects.filter(groupe=self.groupe,eleve=self.eleve).count()
+        if nbinscr>=1 : raise ValueError("L'élève est déjà inscrit à ce groupe !")
+        else : super().save(*args, **kwargs)
+    
 
 class Salle(models.Model):  
     nom = models.CharField(max_length=200)
