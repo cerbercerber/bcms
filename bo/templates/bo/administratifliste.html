@@ -63,6 +63,7 @@
 <div class="card-header">
 <a class="btn btn-link" href="{% url 'bo:administratif'  %}/{{modele}}/add">Ajouter</a>
 <!-- <span class="btn btn-link" id="groupesdt_add">Ajouter</span> --><input style="display:none" type="submit" class="btn btn-link" name="Supprimer" value="Supprimer" id="supplisteall"> <div class="float-sm-right"><div id="groupesdt_newfilter"></div></div>
+<i class="fas fa-question-circle imagesearch"></i>
 </div>
 </div>
  
@@ -76,6 +77,7 @@ Aucun élément !
 </div>
 {% elif modeleliste.count > 0 %}
 <div class="table-responsive">
+<!--SALLE-->
 {% if modele == "salle" %}
 <table class="table table-hover dt" id="groupesdt">
 <thead>
@@ -85,20 +87,23 @@ Aucun élément !
 <th>Enseignant(s)</th>
 <th>Nb. élèves</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
-<td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a></td>
+<td> {{ ge.nom }}</td>
 <td></td>
 <td></td>
-<td><a class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a>Supprimer</a></td>
+<td style="white-space:nowrap"><a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
 </table> 
+<!--FILIERE-->
 {% elif modele == "filiere" %}
 <table class="table table-hover dt" id="groupesdt">
 <thead>
@@ -108,21 +113,23 @@ Aucun élément !
 <th>Enseignant(s)</th>
 <th>Nb. élèves</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
- <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a></td>
+ <td> {{ ge.nom }}</td>
 <td></td>
 <td></td>
-<td><a class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="#">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
 </table> 
-<!--- ---->
+<!--GROUPE-->
 {% elif modele == "groupe" %}
 <table class="table table-hover dt" id="groupesdt">
 <thead>
@@ -132,20 +139,22 @@ Aucun élément !
 <th>Enseignant(s)</th>
 <th>Nb. élèves</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
- <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.ue }} groupe {{ge.nom}}</a></td>
+ <td> {{ ge.ue }} groupe {{ge.nom}}</td>
 <td>
 {% for hi in ge.enseignants.all %}
 {{hi}}
 {% endfor %}
 </td>
 <td>{{ ge.get_nb_eleves }}</td>
-<td><a class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="#" class="supplist">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
@@ -164,18 +173,20 @@ Aucun élément !
 <th>Diplome</th>
 <th>Groupe(s)</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr class="h">
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
- <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a></td>
+<td> {{ ge.nom }}</td>
 <td>{{ ge.prenom }}</td>
 <td>{{ ge.email }}</td>
 <td>{{ ge.get_diplomes }}</td>
 <td>{{ge.get_groupes}}</td>
-<td><a href="#" class="btn btn-link supplist">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="#" class="supplist">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
@@ -193,17 +204,19 @@ Aucun élément !
 <th>Email</th>
 <th>Groupe(s)</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
-<td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a></td>
+<td> {{ ge.nom }}</td>
 <td>{{ ge.prenom }}</td>
 <td>{{ ge.email }}</td>
 <td>{{ge.get_groupes}}</td>
-<td><a href="#" class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="#" class="supplist">Supprimer</a></td>
+<td style="white-space:nowrap"> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
@@ -222,18 +235,20 @@ Aucun élément !
 <th>Nb. Filières</th>
 <th>Nb. élèves</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
- <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge.nom }}</a></td>
+ <td>{{ ge.nom }}</td>
 <td>{{ ge.anneescolaire }}</td>
 <td>{{ ge.get_periodes.count }}</td>
 <td>{{ ge.get_filieres.count }}</td>
 <td>{{ ge.get_eleves.count }}</td>
-<td><a  href="#" class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a  href="#" class="supplist">Supprimer</a></td>
+<td style="white-space:nowrap"><a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
@@ -245,14 +260,16 @@ Aucun élément !
 <th style="display:none"><input type="checkbox" id="groupesdt_delall"></th>
 <th>Nom</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
- <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge }}</a></td>
- <td><a href="#" class="btn btn-link">Supprimer</a></td>
+ <td> {{ ge }}</td>
+ <td><a href="#" class="supplist">Supprimer</a></td>
+  <td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   
@@ -271,18 +288,20 @@ Aucun élément !
 <th>Groupe(s)</th>
 <th>Diplome</th>
 <th></th>
+<th></th>
  </tr>   
 </thead>
 <tbody>
  {% for ge in modeleliste %}    
 <tr>
 <td style="display:none"><input type="checkbox" class="groupesdt_del" name='delgroup[]' value={{ ge.id }}></td>
-<td> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >{{ ge }}</a></td>
+<td>{{ ge }}</td>
 <td>{{ ge.descriptif }}</td>
 <td>{{ge.periode}}</td>
 <td>{{ge.get_groupes}}</td>
 <td>{{ge.periode.diplome}}</td>
-<td><a  href="#" class="btn btn-link">Supprimer</a></td>
+<td style="white-space:nowrap"><a  href="#" class="supplist">Supprimer</a></td>
+<td style="white-space:nowrap"> <a href="{% url 'bo:administratif' %}/{{ modele }}/{{ ge.id }}" >Détail</a></td>
 </tr>  
 {% endfor %}    
 </tbody>   

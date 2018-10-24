@@ -416,25 +416,35 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
             else :
                  return deconnexion(request)
              
+           
+           ################################################
+                #CRER FORM INFO
+           ###############################################
+            modeleitem=""
+            # liste de base                
+            if oid is not None : 
+                       groupeinstance= model.objects.get(id=oid)   
+                       grfound=groupeinstance                                
+                       formmodele = modelForm(instance=groupeinstance)
+                       modeleitem=str(grfound)  
+            else :
+                       formmodele = modelForm()                
             ##############################################
                    # sauvegarde form info
-            #############################################
-            if request.POST.get("Enregistrerinf") :
-                    
-                    if oid is not None : 
-                       groupeinstance= model.objects.get(id=oid)                                   
-                       form = modelForm(request.POST,instance=groupeinstance)
-                    else :
-                        form = modelForm(request.POST)
-                   
-                    if form.is_valid():
+            #############################################             
+            if request.POST.get("Enregistrerinf") :  
+             
+                    if oid is not None :  formmodele = modelForm(request.POST,instance=groupeinstance)    
+                    else : formmodele=modelForm(request.POST)
+               
+                    if formmodele.is_valid():
                         if modele=="eleve" :
                             
                             #delete diplome  eleve
                             dipleledel=FiliereEleve.objects.filter(eleve__id=oid)
                             dipleledel.delete()
                             # save many many with select 2
-                            new_eleve = form.save(commit=False) 
+                            new_eleve = formmodele.save(commit=False) 
                             new_eleve.save()                         
                             tabdipid=request.POST.getlist('filiere')
                             listdip=Filiere.objects.filter(id__in=tabdipid)
@@ -447,7 +457,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                             #filiere
                             uefil=UEFilieres.objects.filter(ue__id=oid)
                             uefil.delete()
-                            new_ue = form.save(commit=False)   
+                            new_ue = formmodele.save(commit=False)   
                             new_ue.save()                        
                             tabdipid=request.POST.getlist('filieres')
                             listdip=Filiere.objects.filter(id__in=tabdipid)
@@ -461,20 +471,17 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 newgr.save();
                        #     messages.success(request, 'Enregistrement réussi Informations')
                         else :
-                            objsave=form.save()
+                            objsave=formmodele.save()
                             newoid=objsave.pk
                         messages.success(request, 'Enregistrement réussi')
                         if oid is None :
                             return redirect('bo:administratif2',modele=modele,oid=newoid)
                     else :
-                        for key,value in form.errors.items():
+                        for key,value in formmodele.errors.items():
                                 messages.error(request,key+" "+ value.as_text())     
-                        return redirect('bo:administratif4',modele=modele,mode='add')
+                        #return redirect('bo:administratif4',modele=modele,mode='add')
                     
                     
-            modeleitem=""
-            # liste de base
-            formmodele = modelForm()
             inlineformset1="vide"
             inlineformset2 ="vide"
             inlineformset3="vide"
@@ -489,15 +496,18 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
             listefs=[]
             listelistefs=[]
             
+            ''''
             if oid is None :
                 gform = modelForm()
             else:
                 grfound=model.objects.get(id=oid);
                 formmodele = modelForm(instance=grfound)  
-                modeleitem=str(grfound)                           
+                modeleitem=str(grfound)  
+            '''                         
                 #######
                 #DIPLOME#
                 #######
+            if oid is not None :
                 if modele=="diplome" :
                     
                     PeriodeDiplomeFormset = inlineformset_factory(Diplome, Periode, fields=('nom','datedebut','datefin',),form=PeriodeForm)                                             

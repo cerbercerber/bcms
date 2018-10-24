@@ -35,30 +35,34 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 <div class="card"  >
 <div class="card-header">
 {% if oid is None %} 
-    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+    <!-- <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/> -->
+    <a class="enrinf" nom="Enregistrerinf"  href="#">Enregistrer</a>
      {% endif %} 
     {% if oid is not None %} 
-    <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/>
+    <!-- <input type="submit" value="Enregistrer" name="Enregistrerinf" class="btn btn-link"/> -->
+    <a class="enrinf" nom="Enregistrerinf"  href="#">Enregistrer</a>
      {% endif %}       
-<a class="btn btn-link" id="groupesdt_retour" href="{% url 'bo:administratif' %}/{{modele}}">Retour</a>
+<a id="groupesdt_retour" href="{% url 'bo:administratif' %}/{{modele}}">Retour</a>
 </div>
 <div class="card-body">
 
     {% csrf_token %}
-    <div class="form-group">
+
     <!-- {{ formmodele }} -->
-    {% for field in formmodele %}
-    <div class="fieldWrapper">
-    <div class="row">
-        {{ field.errors }}
-        <div class="col-sm-2"><label for="{{field.id_for_label}}"> {{field.label}} {% if field.field.required %} <span class="text-danger"> * </span> {% endif %} </label></div><div class="col-sm-4">{{ field }}</div>
+{% for field in formmodele %}
+    <div class="fieldWrapper row form-group"> <!--  {{ field.errors }} -->      
+        <div class="col-sm-2">          
+        <label for="{{field.id_for_label}}"> {{field.label}} {% if field.field.required %} <span class="text-danger"> * </span> {% endif %} </label>            
+        </div>
+        <div class="col-sm-4">
+        {{ field }}
+        </div>
         {% if field.help_text %}
         <p class="help">{{ field.help_text|safe }}</p>
         {% endif %}
      </div>
-    </div>
 {% endfor %}
-    </div>
+
         
 </div>
 </div>
@@ -70,7 +74,8 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 <div id="tab{{fstemp.numtab}}" class="tab-pane fade in">
 <div class="card" {% if oid is None %} style="display:none" {% endif %}>
 <div class="card-header">
-<input type="submit" value="Enregistrer" name="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}"   class="btn btn-link"/>
+<!-- <input type="submit" value="Enregistrer" name="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}"   class="btn btn-link"/> -->
+<a class="enrformset" nom="Enregistrer{{fstemp.numtab}}"  href="#">Enregistrer</a>
 </div>
 <div class="card-body">
   

@@ -1,3 +1,25 @@
+.is-invalid .select2-selection,
+.needs-validation ~ span > .select2-dropdown{
+  border-color:red !important;
+}
+ .imagesearch {
+         float: right;
+        margin-right: -200px;
+        margin-top: 8px;
+        position: relative;
+        z-index: 2;
+        color: #007bff;
+    }
+table.dataTable thead th,table.dataTable tfoot th,table.dataTable.no-footer
+{
+    border-bottom: 1px solid #ededed !important; 
+}
+
+table.dataTable thead th
+{
+    font-weight : normal !important;
+    color: #007bff;
+}
 h1 a {
     color: #FCA205;
 }

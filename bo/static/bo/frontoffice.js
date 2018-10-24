@@ -73,6 +73,56 @@ function dropresize(ancienevent)
 $("document").ready(function(e)
 {
 
+/*enregistrer formset*/
+$(".enrformset").on('click',function(e){
+    var submitname=$(this).attr("nom");
+    //console.log(submitname);
+    $('#groupesdt_form').append('<input type="hidden" value="Enregistrer"  name="'+submitname+'" />');
+    $('#groupesdt_form').submit();
+});
+
+
+/*enregistrer inf*/
+$(".enrinf").on('click',function(e){
+    var submitname=$(this).attr("nom");
+    //console.log(submitname);
+    $('#groupesdt_form').append('<input type="hidden" value="Enregistrer"  name="'+submitname+'" />');
+    $('#groupesdt_form').submit();
+});
+
+
+/*add fawesome icon */
+$('a').each(function(e){
+    var content=$(this).html().toLowerCase();
+    if (content.indexOf("supprimer")!=-1)
+    $(this).html('<i class="fas fa-times-circle text-danger"></i> '+content);
+    else if (content.indexOf("ajouter")!=-1)
+    $(this).html('<i class="fas fa-plus-circle text-success"></i> '+content);
+     else if (content.indexOf("détail")!=-1)
+    $(this).html('<i class="fas fa-info-circle text-warning"></i> '+content);
+     else if (content.indexOf("enregistrer")!=-1)
+    $(this).html('<i class="fas fa-check-circle text-success"></i> '+content);
+     else if (content.indexOf("retour")!=-1)
+    $(this).html('<i class="fas fa-arrow-circle-left text-info"></i> '+content);
+});
+$('input[type=submit]').each(function(e){
+    var content=$(this).val().toLowerCase();
+    console.log(content);
+    if (content.indexOf("supprimer")!=-1)
+        if ($(this).is(":visible"))
+                $(this).before('<i class="fas fa-times-circle text-danger"></i> ');
+    else if (content.indexOf("ajouter")!=-1)
+    $(this).before('<i class="fas fa-plus-circle text-success"></i> ');
+     else if (content.indexOf("détail")!=-1)
+    $(this).before('<i class="fas fa-info-circle text-warning"></i> ');
+     else if (content.indexOf("enregistrer")!=-1)
+    $(this).before('<i class="fas fa-check-circle text-success"></i> ');
+});
+
+
+
+
+/* supression auto liste elements*/
 $(".supplist").on('click',function(u){
     
     if ($(this).closest('tr').find(':checkbox').prop('checked'))
@@ -254,6 +304,8 @@ $("input[type='checkbox'][name*='DELETE']").hide();
 
 /* CONVERTIT SELECT EN SELECT2*/
  $('select').select2({width: '100%', theme: "classic"});
+ /*SELECT2 INVALID*/
+ $(".is-invalid").parent().find(".select2-container").addClass("is-invalid");
  
  /* SUBMIT FILTER */
 $(".filter").on('change',function(e){
@@ -300,7 +352,10 @@ $(".filter").on('change',function(e){
 $(".dt").DataTable( {
         "paging":   false,
         "ordering": true,
-        "info":     false
+        "info":     false,
+        "oLanguage": {
+      "sSearch": ""
+    }
     });
     
 
