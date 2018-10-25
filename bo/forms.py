@@ -8,11 +8,17 @@ from django.forms.models import *
 
 class BasicForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ModelForm, self).__init__(*args, **kwargs)
+        super(ModelForm, self).__init__(*args, **kwargs)       
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
-            if visible.errors :
+   
+    def is_valid(self, *args, **kwargs):
+        valid= super(ModelForm, self).is_valid()
+        for visible in self.visible_fields():
+            if visible.errors  :
                 visible.field.widget.attrs['class'] = 'form-control is-invalid'
+        return valid
+        
 class AdresseForm(BasicForm):
      class Meta:
         model = Adresse

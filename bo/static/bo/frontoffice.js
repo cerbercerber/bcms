@@ -73,6 +73,7 @@ function dropresize(ancienevent)
 $("document").ready(function(e)
 {
 
+
 /*enregistrer formset*/
 $(".enrformset").on('click',function(e){
     var submitname=$(this).attr("nom");
@@ -283,6 +284,7 @@ $("input[name*='datedebut'],input[name*='datefin'] ").datetimepicker({
 /* SUBMIT FORM  ON CLICK SUPPRIMER*/
 $(".supp").on('click',function(e){
     var checkboxtoclick="#"+$(this).attr("checkboxtosupp");
+    //console.log(checkboxtoclick);
     $(checkboxtoclick).click();
     
     var buttonenregistrer="#"+$(this).attr("buttontoclick");
@@ -357,7 +359,15 @@ $(".dt").DataTable( {
       "sSearch": ""
     }
     });
-    
+ 
+ 
+ /*search*/
+$("input[type=search]").each(function(e){
+
+$(this).attr("placeholder","Rechercher");
+$(this).attr("class","form-control");
+});
+//$('.dataTables_filter input').attr("placeholder", "Rechercher");   
 
 
 /*
