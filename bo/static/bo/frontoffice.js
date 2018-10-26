@@ -110,14 +110,16 @@ $('input[type=submit]').each(function(e){
     var content=$(this).val().toLowerCase();
     console.log(content);
     if (content.indexOf("supprimer")!=-1)
+    {
         if ($(this).is(":visible"))
                 $(this).before('<i class="fas fa-times-circle text-danger"></i> ');
+    }
     else if (content.indexOf("ajouter")!=-1)
-    $(this).before('<i class="fas fa-plus-circle text-success"></i> ');
+    $(this).before('<i style="margin-right:-13px;vertical-align:middle;" class="fas fa-plus-circle text-success"></i> ');
      else if (content.indexOf("détail")!=-1)
-    $(this).before('<i class="fas fa-info-circle text-warning"></i> ');
-     else if (content.indexOf("enregistrer")!=-1)
-    $(this).before('<i class="fas fa-check-circle text-success"></i> ');
+    $(this).before('<i style="margin-right:-13px;vertical-align:middle;" class="fas fa-info-circle text-warning"></i> ');    
+    else if (content.indexOf("enregistrer")!=-1)
+    $(this).before('<i style="margin-right:-13px;vertical-align:middle;" class="fas fa-check-circle text-success"></i> ');
 });
 
 

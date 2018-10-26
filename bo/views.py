@@ -269,7 +269,18 @@ def edt(request):
         
     return JsonResponse(data,safe=False)
  
+def changeonformset(formset):
+    for tempform in formset.forms :
+        if tempform.empty_permitted and not tempform.has_changed():
+            changeonformset=False
+        else :
+            changeonformset=True
+            break
+    return changeonformset
+    
 def saveFormset(request,formset): 
+    
+  if changeonformset(formset): 
     if formset.is_valid():
             try:                                          
                 formset.save()
@@ -523,7 +534,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     if request.POST.get('Enregistrer3')  : 
                         inlineformset2 = DiplomeFiliereFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset2) :
-                            inlineformset2 = DiplomeFiliereFormSet(request.POST,instance=grfound)
+                            inlineformset2 = DiplomeFiliereFormSet(instance=grfound)
                     else :
                         inlineformset2 = DiplomeFiliereFormSet(instance=grfound)                    
                     listefs.append({'titre':"Filières","formset":inlineformset2,'numtab':"3"})
@@ -534,7 +545,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                         if  request.POST.get('Enregistrer4')  :
                             formsethtmltemp = FiliereEleveFormSet(request.POST,instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))
                             if saveFormset(request,formsethtmltemp) :
-                                    formsethtmltemp = FiliereEleveFormSet(request.POST,instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))              
+                                    formsethtmltemp = FiliereEleveFormSet(instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))              
                         else :                           
                             formsethtmltemp = FiliereEleveFormSet(instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))                                                             
                         listeformset1.append({'titre':fifi.nom ,'formset':formsethtmltemp})

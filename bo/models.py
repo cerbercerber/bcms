@@ -106,8 +106,8 @@ class Eleve(Personne):
                 
 
 class FiliereEleve(models.Model):  
-    filiere=models.ForeignKey(Filiere,on_delete=models.CASCADE)
-    eleve=models.ForeignKey(Eleve,on_delete=models.CASCADE)
+    filiere=models.ForeignKey(Filiere,on_delete=models.PROTECT)
+    eleve=models.ForeignKey(Eleve,on_delete=models.PROTECT)
     def nommodele(self):
         return 'filiere '+str(self.filiere.nom)
     def nommodeledb(self):
@@ -139,13 +139,13 @@ class UE(models.Model):
         return res
 
 class UEFilieres(models.Model):  
-    ue=models.ForeignKey(UE,on_delete=models.CASCADE);
-    filiere=models.ForeignKey(Filiere,on_delete=models.CASCADE);
+    ue=models.ForeignKey(UE,on_delete=models.PROTECT);
+    filiere=models.ForeignKey(Filiere,on_delete=models.PROTECT);
     
 
 class Groupe(models.Model):  
     nom = models.CharField(max_length=200)     
-    ue = models.ForeignKey(UE, on_delete=models.CASCADE) 
+    ue = models.ForeignKey(UE, on_delete=models.PROTECT) 
     enseignants= models.ManyToManyField(Enseignant, through="GroupesEnseignants")
     def __str__(self):
         return self.ue.nom +" "+self.nom+" ("+self.ue.periode.diplome.nom+" "+ self.ue.periode.diplome.anneescolaire.nom+")"
@@ -184,7 +184,7 @@ class Inscription(models.Model):
     # prevent changing the creator_id of the model. (This example doesn't
     # support cases where 'creator_id' is deferred).
         nbinscr=Inscription.objects.filter(groupe=self.groupe,eleve=self.eleve).count()
-        if nbinscr>=1 : raise ValueError("L'élève est déjà inscrit à ce groupe !")
+        if nbinscr>=1 : raise ValueError("L'élève est déjà inscrit au groupe "+str(self.groupe)+" !")
         else : super().save(*args, **kwargs)
     
 

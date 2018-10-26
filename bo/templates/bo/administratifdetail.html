@@ -147,7 +147,8 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 <div id="tab{{listefstemp.numtab}}" class="tab-pane fade in">
 <div class="card" {% if oid is None %} style="display:none" {% endif %} >
 <div class="card-header">
-<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>
+<!--<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>-->
+<a class="enrformset" nom="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" href="#">enregistrer</a>
 </div>
 <div class="card-body">
  {% for fs in listefstemp.listformset %} 
