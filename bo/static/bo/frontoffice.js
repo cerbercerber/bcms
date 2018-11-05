@@ -285,9 +285,10 @@ $("input[name*='datedebut'],input[name*='datefin'] ").datetimepicker({
 
 /* SUBMIT FORM  ON CLICK SUPPRIMER*/
 $(".supp").on('click',function(e){
+//alert("supp");
     var checkboxtoclick="#"+$(this).attr("checkboxtosupp");
-    //console.log(checkboxtoclick);
-    $(checkboxtoclick).click();
+   // console.log(checkboxtoclick);
+    $(checkboxtoclick).prop('checked', true);
     
     var buttonenregistrer="#"+$(this).attr("buttontoclick");
     $(buttonenregistrer).click();   
@@ -303,6 +304,7 @@ $(".supp").hover(function(e){
 });
 
 /*HIDE DELETE BOX INLINEFORMSET */
+$("input[type='checkbox'][name*='DELETE']").prop('checked', false);
 $("input[type='checkbox'][name*='DELETE']").hide();
 
 
