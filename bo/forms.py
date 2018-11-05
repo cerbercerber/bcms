@@ -3,6 +3,8 @@ from .models import *
 from django import forms
 
 
+from django.db.utils import OperationalError
+
 #from django.forms import inlineformset_factory
 from django.forms.models import *
 
@@ -33,7 +35,7 @@ class GroupeForm(BasicForm):
         fields = ['nom','ue']
       
 class GroupeFormFilter (forms.Form):
-        
+    try :
          choicesens=[[0, 'Tous']] + [ (d.id, str(d)) for d in Enseignant.objects.all()]
          enseignantsfilter= forms.ChoiceField(choices=choicesens, label="Enseignant",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
@@ -44,6 +46,7 @@ class GroupeFormFilter (forms.Form):
          choicesdip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          ue__periode__diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
+    except OperationalError: pass
         
     
                         
@@ -57,7 +60,7 @@ class EleveForm(BasicForm):
 
 class EleveFormFilter (forms.Form):
         
-    
+    try :
          choicesdip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          choicesgroupes=[[0, 'Tous']] + [ (d.id, str(d)) for d in Groupe.objects.all()]
          diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
@@ -65,7 +68,7 @@ class EleveFormFilter (forms.Form):
          #groupefilter=forms.ChoiceField(choices=choicesgroupes, label="Groupe",                                      
          #                                widget=forms.Select(attrs={'class': 'filter'}))
          
-         
+    except OperationalError: pass    
     
 
 
@@ -120,7 +123,7 @@ class UEForm(BasicForm):
 
 class UEFormFilter (forms.Form):
         
-    
+    try :
          choicedip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          periode__diplomefilter= forms.ChoiceField(choices=choicedip, label="Diplome",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
@@ -128,7 +131,7 @@ class UEFormFilter (forms.Form):
          periodefilter= forms.ChoiceField(choices=choiceper, label="Période",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))  
         
-        
+    except OperationalError: pass    
         
         
 class DiplomeForm(BasicForm):
@@ -138,13 +141,16 @@ class DiplomeForm(BasicForm):
 
         
 class DiplomeFormFilter (forms.Form):
+    
+    try :
         
          choiceannsco=[[0, 'Tous']] + [ (d.id, str(d)) for d in AnneeScolaire.objects.all()]
          anneescolairefilter= forms.ChoiceField(choices=choiceannsco, label="Année scolaire",                                      
                                          widget=forms.Select(attrs={'class': 'filter'})
                                          )
                                   
-                                         
+    
+    except OperationalError: pass                                     
                           
 
 class FiliereEleveForm(BasicForm):

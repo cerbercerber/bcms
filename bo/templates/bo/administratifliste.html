@@ -45,6 +45,14 @@
  {% endif %}
  {% if modele is not None %}
  
+ {% if modeleliste.count == 0 %}
+<div class="alert alert-info" role="alert">
+Aucun élément !
+<a class="btn btn-link" href="{% url 'bo:administratif'  %}/{{modele}}/add">Ajouter un {{modele}}</a>
+</div>
+
+{% elif modeleliste.count > 0 %}
+ 
 <div class="card" id="groupesdt_list" {% if oid is not None or mode == "add" %} style="display:none" {% endif %}>
 <div class="card-header">
 <label class="text-capitalize">Liste des {{modele}}</label>&nbsp;&nbsp;&nbsp;
@@ -70,12 +78,7 @@
 <!------------->
 <!-- groupes -->
 <!------------->
-{% if modeleliste.count == 0 %}
-<div class="alert alert-info" role="alert">
-Aucun élément !
-<a class="btn btn-link" href="{% url 'bo:administratif'  %}/{{modele}}/add">Ajouter un {{modele}}</a>
-</div>
-{% elif modeleliste.count > 0 %}
+
 <div class="table-responsive">
 <!--SALLE-->
 {% if modele == "salle" %}

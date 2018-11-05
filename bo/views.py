@@ -980,7 +980,7 @@ def administratif(request,oid=None,modele=None,mode=None):
 
 def init():
     
-    
+    from django.db.utils import OperationalError
     #from django.core.management import call_command
     #call_command('makemigrations')
     #call_command('migrate')
@@ -988,8 +988,9 @@ def init():
     try:
         User.objects.get(username='cerede')            
     except User.DoesNotExist:     
-            User.objects.create_superuser(username='cerede', email='cerede@google.fr', password='kddcy8kx')
-    
+        User.objects.create_superuser(username='cerede', email='cerede@google.fr', password='kddcy8kx')
+    #except OperationalError:
+    #    User.objects.create_superuser(username='cerede', email='cerede@google.fr', password='kddcy8kx')
     
       
     # creation user admin1 
