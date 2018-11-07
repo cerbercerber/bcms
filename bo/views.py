@@ -320,6 +320,53 @@ def administratifliste(request,modele=None):
     if request.user.is_authenticated:
         if request.user.groups.filter(name='administratif').exists() :
             
+            #
+            listhisto=[]
+            h=None
+            if modele is None :
+            
+                try :
+                    #################
+                    #onglet eleeve
+                    #################
+                    h=Eleve.history.first() 
+                    if h:
+                        listhisto.append({"reason" :h.history_change_reason ,"user":h.history_user ,"modele":h.instance.nommodele,"link":h.instance.nommodeledb, "info" : str(h.instance),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
+                    h=Inscription.history.first() 
+                    if h:
+                        hel=h.eleve
+                        listhisto.append({"reason" :h.history_change_reason+ " inscription"  ,"user":h.history_user,"modele":hel.nommodele,"link":hel.nommodeledb, "info" : str(hel),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
+                    
+                    #################
+                    #eleve
+                    ################
+                    h=Adresse.history.first() 
+                    if h:
+                        hpers=h.personne
+                        try :
+                            hel=Eleve.objects.get(id=hpers.id)
+                        except Eleve.DoesNotExist:
+                            hel=Enseignant.objects.get(id=hpers.id)
+                        if hel :
+                            listhisto.append({"reason" :h.history_change_reason+" adresse" ,"user":h.history_user,"modele":hel.nommodele,"link":hel.nommodeledb, "info" : str(hel),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
+                    
+                    ###############
+                    #onglet diplome
+                    ###############
+                    h=Diplome.history.first() 
+                    if h:
+                        listhisto.append({"reason" :h.history_change_reason ,"user":h.history_user,"modele":h.instance.nommodele,"link":h.instance.nommodeledb, "info" : str(h.instance),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
+                    h=Periode.history.first() 
+                    if h:
+                        hdip=h.diplome
+                        if hdip :
+                            listhisto.append({"reason" :h.history_change_reason + " periode" ,"user":h.history_user,"modele":hdip.nommodele,"link":hdip.nommodeledb, "info" : str(hdip),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})           
+                    h=Filiere.history.first() 
+                    if h:
+                        hfil=h.diplome
+                        if hfil :
+                            listhisto.append({"reason" :h.history_change_reason + " filiere" ,"user":h.history_user,"modele":hfil.nommodele,"link":hfil.nommodeledb, "info" : str(hfil),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
+                except Exception:  None   
             #if request.POST.get("modele") is not None :
             #    modele=request.POST.get("modele");
             
@@ -358,7 +405,9 @@ def administratifliste(request,modele=None):
               #TRAITEMENT SUPPRESSION
             if request.POST.get("Supprimer") :
                     tabdel=request.POST.getlist("delgroup[]");
-                    groupesdel=model.objects.filter(id__in=tabdel)
+                    #groupesdel=model.objects.filter(id__in=tabdel)
+                    #groupesdel.delete()
+                    groupesdel=model.objects.get(id=tabdel[0])
                     try:
                         groupesdel.delete()
                     except ProtectedError as e:
@@ -391,7 +440,8 @@ def administratifliste(request,modele=None):
             return render(request, 'bo/administratifliste.html',{                                                                                                                                                                        
                                                          "modele":modele,
                                                          "modeleliste" : modeleliste,
-                                                         "formFilter":formFilter,                                                                                                                                                                                                                         
+                                                         "formFilter":formFilter, 
+                                                         "listhisto":listhisto                                                                                                                                                                                                                        
                                                          }) 
                                                                       
     #else:
@@ -520,28 +570,33 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                 #######
             if oid is not None :
                 if modele=="diplome" :
-                    
-                    PeriodeDiplomeFormset = inlineformset_factory(Diplome, Periode, fields=('nom','datedebut','datefin',),form=PeriodeForm)                                             
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0   
+                    PeriodeDiplomeFormset = inlineformset_factory(Diplome, Periode, fields=('nom','datedebut','datefin',),form=PeriodeForm,extra=extra)                                             
                     if  request.POST.get('Enregistrer2')  :
                         inlineformset1 = PeriodeDiplomeFormset(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset1) :
                             inlineformset1 = PeriodeDiplomeFormset(instance=grfound)  
                     else :
                         inlineformset1 = PeriodeDiplomeFormset(instance=grfound)                                                      
-                    listefs.append({'titre':"Périodes","formset":inlineformset1,'numtab':"2"})
+                    listefs.append({'titre':"Périodes","formset":inlineformset1,'numtab':"2",'mode':extra})
                   
-                    DiplomeFiliereFormSet = inlineformset_factory(Diplome, Filiere,fields=('nom',),form=FiliereForm)                                                   
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0   
+                    DiplomeFiliereFormSet = inlineformset_factory(Diplome, Filiere,fields=('nom',),form=FiliereForm,extra=extra)                                                   
                     if request.POST.get('Enregistrer3')  : 
                         inlineformset2 = DiplomeFiliereFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset2) :
                             inlineformset2 = DiplomeFiliereFormSet(instance=grfound)
                     else :
                         inlineformset2 = DiplomeFiliereFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Filières","formset":inlineformset2,'numtab':"3"})
+                    listefs.append({'titre':"Filières","formset":inlineformset2,'numtab':"3",'mode':extra})
                     
+                    if  request.POST.get('Ajouter4')  : extra=1  
+                    else : extra=0   
                     for fifi in Filiere.objects.filter(diplome__id=oid) :    
                         tempprefix="filierel" +str(fifi.id)                    
-                        FiliereEleveFormSet= inlineformset_factory(Filiere, FiliereEleve, fields=('eleve',),form=FiliereEleveForm)   
+                        FiliereEleveFormSet= inlineformset_factory(Filiere, FiliereEleve, fields=('eleve',),form=FiliereEleveForm,extra=extra)   
                         if  request.POST.get('Enregistrer4')  :
                             formsethtmltemp = FiliereEleveFormSet(request.POST,instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))
                             if saveFormset(request,formsethtmltemp) :
@@ -550,7 +605,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                             formsethtmltemp = FiliereEleveFormSet(instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))                                                             
                         listeformset1.append({'titre':fifi.nom ,'formset':formsethtmltemp})
                     
-                    listelistefs.append({'titre':"Elèves","listformset":listeformset1,'numtab':"4"});        
+                    listelistefs.append({'titre':"Elèves","listformset":listeformset1,'numtab':"4",'mode':extra});        
                     #DiplomeEleveFormSet = inlineformset_factory(Diplome, DiplomeEleve, fields=('eleve',),form=DiplomeEleveForm)       
                     #inlineformset2 = DiplomeEleveFormSet(instance=grfound)
                     #formsettitre2="Elèves"
@@ -566,17 +621,21 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     inlineformset1 = InscriptionFormSet(instance=grfound)                                     
                     listefs.append({'titre':"Inscriptions simples","formset":inlineformset1,'numtab':"2"});
                     '''
-                    
-                    AdresseFormSet = inlineformset_factory(Eleve, Adresse, fields=('pays','ville','adresse1','adresse2','adresse3'),form=AdresseForm)                         
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0   
+                    AdresseFormSet = inlineformset_factory(Eleve, Adresse, fields=('pays','ville','adresse1','adresse2','adresse3'),form=AdresseForm,extra=extra)                         
                     if request.POST.get('Enregistrer2') :
                         inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset1) :
                             inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
                     else :
                         inlineformset1 = AdresseFormSet(instance=grfound)                                     
-                    listefs.append({'titre':"Adresse","formset":inlineformset1,'numtab':"2"});
+                    listefs.append({'titre':"Adresse","formset":inlineformset1,'numtab':"2","mode":extra})
                     
-                    InscriptionFormSet = inlineformset_factory(Eleve, Inscription, fields=('groupe',),form=InscriptionForm)  
+                    
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0   
+                    InscriptionFormSet = inlineformset_factory(Eleve, Inscription, fields=('groupe',),form=InscriptionForm,extra=extra)  
                     for annsco in AnneeScolaire.objects.all() :
                                 tempprefix="inscriptions" +str(annsco.id)
                                 if  request.POST.get('Enregistrer3')  :
@@ -588,65 +647,90 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 #filtrer les select par anne scolaire                                
                                 for form in formsethtmltemp:
                                         form.fields['groupe'].queryset = Groupe.objects.filter(ue__periode__diplome__anneescolaire=annsco)
-                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp})
+                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp,"mode":extra})
                     
                     listelistefs.append({'titre':"Inscriptions complexes","listformset":listeformset1,'numtab':"3"});                  
                                        
                 elif modele=="groupe" :
-                            
-                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm)                       
+                    
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0           
+                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm,extra=extra)                       
                     if request.POST.get('Enregistrer2')  :
                         inlineformset2 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset1) :
                             inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)  
                     else :
                         inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Enseignants","formset":inlineformset2,'numtab':"2"});   
+                    listefs.append({'titre':"Enseignants","formset":inlineformset2,'numtab':"2","mode":extra});   
                     
-                    InscriptionFormSet = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm)
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0   
+                    InscriptionFormSet = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm,extra=extra)
                     if request.POST.get('Enregistrer3') :                       
                         inlineformset1 = InscriptionFormSet(request.POST,instance=grfound) 
                         if saveFormset(request,inlineformset1) :
                              inlineformset1 = InscriptionFormSet(instance=grfound)            
                     else :
                         inlineformset1 = InscriptionFormSet(instance=grfound)                      
-                    listefs.append({'titre':"Inscriptions","formset":inlineformset1,'numtab':"3"});   
+                    listefs.append({'titre':"Inscriptions","formset":inlineformset1,'numtab':"3","mode":extra});   
                     
                 elif modele=="enseignant" :   
-                                                                     
-                    GroupesEnseignantsFormSet = inlineformset_factory(Enseignant, GroupesEnseignants, fields=('groupe',),form=GroupesEnseignantsForm)       
-                    if  request.POST.get('Enregistrer2') :                      
-                        inlineformset1 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
-                        if saveFormset(request,inlineformset1) :
-                            inlineformset1 = GroupesEnseignantsFormSet(instance=grfound)    
-                    else :
-                        inlineformset1 = GroupesEnseignantsFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Groupes","formset":inlineformset1,'numtab':"2"});   
                     
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0   
+                    AdresseFormSet = inlineformset_factory(Enseignant, Adresse, fields=('pays','ville','adresse1','adresse2','adresse3'),form=AdresseForm,extra=extra)                         
+                    if request.POST.get('Enregistrer2') :
+                        inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
+                        if saveFormset(request,inlineformset1) :
+                            inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
+                    else :
+                        inlineformset1 = AdresseFormSet(instance=grfound)                                     
+                    listefs.append({'titre':"Adresse","formset":inlineformset1,'numtab':"2","mode":extra})
+                    
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0                                                    
+                    GroupesEnseignantsFormSet = inlineformset_factory(Enseignant, GroupesEnseignants, fields=('groupe',),form=GroupesEnseignantsForm,extra=extra)       
+                    if  request.POST.get('Enregistrer3') :                      
+                        inlineformset2 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
+                        if saveFormset(request,inlineformset2) :
+                            inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)    
+                    else :
+                        inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)                    
+                    listefs.append({'titre':"Groupes","formset":inlineformset2,'numtab':"3","mode":extra});   
+                    
+                    
+                    if  request.POST.get('Ajouter4')  : extra=1  
+                    else : extra=0   
+                    GroupesEnseignantsFormSet = inlineformset_factory(Enseignant, GroupesEnseignants, fields=('groupe',),form=GroupesEnseignantsForm,extra=extra)                       
                     for annsco in AnneeScolaire.objects.all() :
                                 tempprefix="groupesel" +str(annsco.id)
-                                if  request.POST.get('Enregistrer3') :                                                                       
+                                if  request.POST.get('Enregistrer4') :                                                                       
                                     formsethtmltemp = GroupesEnseignantsFormSet(request.POST,instance=grfound,prefix=tempprefix,queryset=GroupesEnseignants.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))
                                     if saveFormset(request,formsethtmltemp) :
                                         formsethtmltemp = GroupesEnseignantsFormSet(instance=grfound,prefix=tempprefix,queryset=GroupesEnseignants.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))                                                                    
                                 else :                                  
                                     formsethtmltemp = GroupesEnseignantsFormSet(instance=grfound,prefix=tempprefix,queryset=GroupesEnseignants.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))                                                        
                                 listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp})                   
-                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3"}); 
+                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"4","mode":extra}); 
                 
                 
                 elif modele=="UE" :
-                                                                            
-                    GroupesUEFormSet = inlineformset_factory(UE, Groupe, fields=('nom',),form=GroupeForm )   
+                    
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0                                                           
+                    GroupesUEFormSet = inlineformset_factory(UE, Groupe, fields=('nom',),form=GroupeForm,extra=extra )   
                     if  request.POST.get('Enregistrer2') :     
                         inlineformset1 = GroupesUEFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset1) :
                               inlineformset1 = GroupesUEFormSet(instance=grfound)     
                     else :
                         inlineformset1 = GroupesUEFormSet(instance=grfound)                                         
-                    listefs.append({'titre':"Groupes","formset":inlineformset1,'numtab':"2"});  
-                                                          
-                    GroupesUEFormset = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm)                                  
+                    listefs.append({'titre':"Groupes","formset":inlineformset1,'numtab':"2","mode":extra});  
+                    
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0                                         
+                    GroupesUEFormset = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm,extra=extra)                                  
                     for grue in Groupe.objects.filter(ue=grfound) :
                                 tempprefix="groupesue" +str(grue.id)
                                 if  request.POST.get('Enregistrer3') :                                      
@@ -656,9 +740,11 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 else :                                   
                                     tempGroupesUEFormset = GroupesUEFormset(instance=grue,prefix=tempprefix)    
                                 listeformset1.append({'titre':grue.nom ,'formset':tempGroupesUEFormset})
-                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3"});             
+                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3","mode":extra});             
                     
-                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm)                                    
+                    if  request.POST.get('Ajouter4')  : extra=1  
+                    else : extra=0   
+                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm,extra=extra)                                    
                     for grue in Groupe.objects.filter(ue=grfound) :
                                 tempprefix="groupesenseignant" +str(grue.id)
                                 if request.POST.get('Enregistrer4') :                                    
@@ -668,7 +754,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 else :                                  
                                     tempGroupesEnseignantsFormSet = GroupesEnseignantsFormSet(instance=grue,prefix=tempprefix)                                                                    
                                 listeformset2.append({'titre':grue.nom ,'formset':tempGroupesEnseignantsFormSet})
-                    listelistefs.append({'titre':"Enseignants","listformset":listeformset2,'numtab':"4"}); 
+                    listelistefs.append({'titre':"Enseignants","listformset":listeformset2,'numtab':"4","mode":extra}); 
 
                 
             
@@ -782,8 +868,11 @@ def administratif(request,oid=None,modele=None,mode=None):
                                                                            
             #TRAITEMENT SUPPRESSION
             if request.POST.get("Supprimer") :
-                    tabdel=request.POST.getlist("delgroup[]");
-                    groupesdel=model.objects.filter(id__in=tabdel)
+                    tabdel=request.POST.getlist("delgroup[]")
+                    #queryset deltet
+                    #groupesdel=model.objects.filter(id__in=tabdel)
+                    #groupesdel.delete()
+                    groupesdel=model.objects.get(id=tabdel[0])
                     groupesdel.delete()
                     
             #fin traitement formulaire

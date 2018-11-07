@@ -70,7 +70,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', 
+    
+    'simple_history',
     
     #'rest_framework'
 ]
@@ -79,6 +81,7 @@ MIDDLEWARE = [
     
     #'bcms.frontoffice.middleware.ExceptionMiddleware'
     
+   
     
     
     'django.middleware.security.SecurityMiddleware',
@@ -87,7 +90,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
+    
+    
+    'simple_history.middleware.HistoryRequestMiddleware',
     
     #'bo.middleware.StackOverflowMiddleware'
 ]

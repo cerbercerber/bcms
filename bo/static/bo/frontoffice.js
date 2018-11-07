@@ -95,6 +95,7 @@ $(".enrinf").on('click',function(e){
 /*add fawesome icon */
 $('a').each(function(e){
     var content=$(this).html().toLowerCase();
+    console.log(content);
     if (content.indexOf("supprimer")!=-1)
     $(this).html('<i class="fas fa-times-circle text-danger"></i> '+content);
     else if (content.indexOf("ajouter")!=-1)
@@ -104,6 +105,8 @@ $('a').each(function(e){
      else if (content.indexOf("enregistrer")!=-1)
     $(this).html('<i class="fas fa-check-circle text-success"></i> '+content);
      else if (content.indexOf("retour")!=-1)
+    $(this).html('<i class="fas fa-arrow-circle-left text-info"></i> '+content);
+     else if (content.indexOf("annuler")!=-1)
     $(this).html('<i class="fas fa-arrow-circle-left text-info"></i> '+content);
 });
 $('input[type=submit]').each(function(e){

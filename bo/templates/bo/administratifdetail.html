@@ -76,11 +76,16 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 <div class="card-header">
 <!-- <input type="submit" value="Enregistrer" name="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}"   class="btn btn-link"/> -->
 <a class="enrformset" nom="Enregistrer{{fstemp.numtab}}" id="Enregistrer{{fstemp.numtab}}" href="#">Enregistrer</a>
+{% if fstemp.mode == 0 %}
+<a class="enrformset" nom="Ajouter{{fstemp.numtab}}" href="#">Ajouter</a>
+{% else %}
+<a class="enrformset" nom="Retour{{fstemp.numtab}}" id="Retour{{fstemp.numtab}}" href="#">Annuler</a>
+{% endif %}
 </div>
 <div class="card-body">
   
   {{ fstemp.formset.management_form }}
-    {% for form in fstemp.formset %}
+    {% for form in fstemp.formset %}   
         <div class="card">
             <div class="card-header">
             {{ form.instance.nommodele }} {{ forloop.counter }}
@@ -132,7 +137,10 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
         </div>
         </div>
         </div>         
-        
+    {% empty %}
+    <div class="alert alert-info" role="alert">
+    <a class="enrformset" nom="Ajouter{{fstemp.numtab}}" href="#">Ajouter</a>
+    </div>
     {% endfor %}
 </div>
 </div>
@@ -149,6 +157,11 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 <div class="card-header">
 <!--<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>-->
 <a class="enrformset" nom="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" href="#">enregistrer</a>
+{% if listefstemp.mode == 0 %}
+<a class="enrformset" nom="Ajouter{{listefstemp.numtab}}" href="#">Ajouter</a>
+{% else %}
+<a class="enrformset" nom="Retour{{listefstemp.numtab}}" id="Retour{{listefstemp.numtab}}" href="#">Annuler</a>
+{% endif %}
 </div>
 <div class="card-body">
  {% for fs in listefstemp.listformset %} 
