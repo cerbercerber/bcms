@@ -153,21 +153,18 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 
 {% for listefstemp in listelistefs %}
 <div id="tab{{listefstemp.numtab}}" class="tab-pane fade in">
-<div class="card" {% if oid is None %} style="display:none" {% endif %} >
-<div class="card-header">
-<!--<input type="submit" value="Enregistrer" name="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" class="btn btn-link"/>-->
-<a class="enrformset" nom="Enregistrer{{listefstemp.numtab}}" id="Enregistrer{{listefstemp.numtab}}" href="#">enregistrer</a>
-{% if listefstemp.mode == 0 %}
-<a class="enrformset" nom="Ajouter{{listefstemp.numtab}}" href="#">Ajouter</a>
-{% else %}
-<a class="enrformset" nom="Retour{{listefstemp.numtab}}" id="Retour{{listefstemp.numtab}}" href="#">Annuler</a>
-{% endif %}
-</div>
-<div class="card-body">
+<!--<div class="card" {% if oid is None %} style="display:none" {% endif %} >
+<div class="card-body"> -->
  {% for fs in listefstemp.listformset %} 
   <div class="card">
             <div class="card-header">
             {{fs.titre}}
+            <a class="enrformsetlist" nom="Enregistrer{{listefstemp.numtab}}"  prefix="{{fs.formset.prefix}}" href="#">enregistrer</a>
+            {% if fs.mode == 0 %}
+            <a class="enrformsetlist" nom="Ajouter{{listefstemp.numtab}}" prefix="{{fs.formset.prefix}}" href="#">Ajouter</a>
+            {% else %}
+            <a class="enrformsetlist" nom="Retour{{listefstemp.numtab}}" prefix="{{fs.formset.prefix}}" href="#">Annuler</a>
+            {% endif %}
             </div>
             <div class="card-body"> 
  {{fs.formset.management_form}}
@@ -191,7 +188,7 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
            <a  href="{% url 'bo:administratif' %}/{{form.instance.nommodeledb}}" class="btn btn-link" name="detlink" >Détails</a>
            {% endif%} 
            {% endif%} 
-           <a  href="#" class="btn btn-link supp" checkboxtosupp="{{field.id_for_label}}" buttontoclick="Enregistrer{{listefstemp.numtab}}" name="rr" >Supprimer</a>
+           <a  href="#" class="btn btn-link supplistfs" checkboxtosupp="{{field.id_for_label}}" prefix="{{fs.formset.prefix}}" buttontoclick="Enregistrer{{listefstemp.numtab}}" name="rr" >Supprimer</a>
              {% endif %}
            {% endif %}
            {{field}}   
@@ -205,8 +202,8 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
     </div>
     </div>
 {% endfor %}
-</div>
-</div>
+ <!--</div>
+</div>-->
 </div> 
 
 {% endfor %}

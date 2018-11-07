@@ -82,6 +82,16 @@ $(".enrformset").on('click',function(e){
     $('#groupesdt_form').submit();
 });
 
+/*enregistrer formset list*/
+$(".enrformsetlist").on('click',function(e){
+    var submitname=$(this).attr("nom");
+    var prefix=$(this).attr("prefix");
+    //console.log(submitname);
+    $('#groupesdt_form').append('<input type="hidden" value="Enregistrer"  name="'+submitname+'" />');
+    $('#groupesdt_form').append('<input type="hidden" name="prefix"  value="'+prefix+'" />');
+    $('#groupesdt_form').submit();
+});
+
 
 /*enregistrer inf*/
 $(".enrinf").on('click',function(e){
@@ -95,7 +105,7 @@ $(".enrinf").on('click',function(e){
 /*add fawesome icon */
 $('a').each(function(e){
     var content=$(this).html().toLowerCase();
-    console.log(content);
+    //console.log(content);
     if (content.indexOf("supprimer")!=-1)
     $(this).html('<i class="fas fa-times-circle text-danger"></i> '+content);
     else if (content.indexOf("ajouter")!=-1)
@@ -111,7 +121,7 @@ $('a').each(function(e){
 });
 $('input[type=submit]').each(function(e){
     var content=$(this).val().toLowerCase();
-    console.log(content);
+    //console.log(content);
     if (content.indexOf("supprimer")!=-1)
     {
         if ($(this).is(":visible"))
@@ -295,6 +305,19 @@ $(".supp").on('click',function(e){
     
     var buttonenregistrer="#"+$(this).attr("buttontoclick");
     $(buttonenregistrer).click();   
+});
+
+$(".supplistfs").on('click',function(e){
+//alert("supplistfs");
+    var checkboxtoclick="#"+$(this).attr("checkboxtosupp");
+    // console.log(checkboxtoclick);
+    $(checkboxtoclick).prop('checked', true);
+    
+    var buttonenregistrer=$(this).attr("buttontoclick");
+    var prefix=$(this).attr("prefix");
+    //$("#groupesdt_form").append('<input type="hidden" name="prefix" value="'+prefix+'" />');
+    $('a[nom='+buttonenregistrer+'][prefix='+prefix+']').click();
+    //$(buttonenregistrer).click();   
 });
 
 /* SUBMIT FORM  ON CLICK SUPPRIMER couleur*/
