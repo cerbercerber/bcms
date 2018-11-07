@@ -270,6 +270,7 @@ def edt(request):
     return JsonResponse(data,safe=False)
  
 def changeonformset(formset):
+    changeonformset=False
     for tempform in formset.forms :
         if tempform.empty_permitted and not tempform.has_changed():
             changeonformset=False
@@ -647,9 +648,9 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 #filtrer les select par anne scolaire                                
                                 for form in formsethtmltemp:
                                         form.fields['groupe'].queryset = Groupe.objects.filter(ue__periode__diplome__anneescolaire=annsco)
-                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp,"mode":extra})
+                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp})
                     
-                    listelistefs.append({'titre':"Inscriptions complexes","listformset":listeformset1,'numtab':"3"});                  
+                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3","mode":extra});                  
                                        
                 elif modele=="groupe" :
                     
