@@ -81,22 +81,6 @@ def deconnexion(request):
     logout(request)  
     return redirect('/bo/index',foo='bar')
 
-def eleve(request):
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='eleve').exists() :
-            user=request.user        
-            groupeeleve=Inscription.objects.filter(eleve__nom__contains=user.username)
-            return render(request, 'bo/eleve.html',{"groupeeleve" : groupeeleve,'user':user,"ug":user.groups.all()}) 
-    return deconnexion(request)
-
-def enseignant(request):
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='enseignant').exists() :
-            user=request.user        
-            groupeenseignant=Groupe.objects.filter(enseignants__nom__contains=user.username)
-            return render(request, 'bo/enseignant.html',{"groupeenseignant" : groupeenseignant,'user':user,"ug":user.groups.all()}) 
-    return deconnexion(request)
-
 
 def edtresa(request,idcours):
  
@@ -292,14 +276,15 @@ def saveFormset(request,formset):
                         #messages.error(request, 'Impossible de supprimer cet objet '+ str(type(e))+" : "+str(e))
                         messerror=" ( "
                         for m in e.protected_objects :
-                            messerror=messerror+m.nommodele()+" " + str(m) +" "   
+                            messerror=messerror+m.nommodele()       #+" " + str(m) +" "   
                         messerror+=")"                                                
                         messages.error(request, 'Impossible de supprimer cet objet, il reste des objets liés ' + messerror)
                         return False
             
             
             else :
-                messages.success(request, formset.prefix +' Enregistrement réussi')
+                messages.success(request, ' Enregistrement réussi')
+                #messages.success(request, formset.prefix +' Enregistrement réussi')
                 return True
             '''
             for tempform in formset.forms :
@@ -416,7 +401,7 @@ def administratifliste(request,modele=None):
                         #messerror=", ".join([ instance.__str__() for instance in instances])
                         messerror=" ( "
                         for m in e.protected_objects :
-                            messerror=messerror+m.nommodele()+" " + str(m) +" "   
+                            messerror=messerror+m.nommodele()   #+" " + str(m) +" "   
                         messerror+=")"                                                
                         messages.error(request, 'Impossible de supprimer cet objet, il reste des objets liés ' + messerror)
                                           
@@ -500,44 +485,47 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     else : formmodele=modelForm(request.POST)
                
                     if formmodele.is_valid():
-                        if modele=="eleve" :
-                            
-                            #delete diplome  eleve
-                            dipleledel=FiliereEleve.objects.filter(eleve__id=oid)
-                            dipleledel.delete()
-                            # save many many with select 2
-                            new_eleve = formmodele.save(commit=False) 
-                            new_eleve.save()                         
-                            tabdipid=request.POST.getlist('filiere')
-                            listdip=Filiere.objects.filter(id__in=tabdipid)
-                            for dip in listdip :                     
-                                de=FiliereEleve(eleve=new_eleve, filiere=dip)
-                                de.save()                                
-                            newoid=new_eleve.pk
-                            
-                        elif modele=="UE" :
-                            #filiere
-                            uefil=UEFilieres.objects.filter(ue__id=oid)
-                            uefil.delete()
-                            new_ue = formmodele.save(commit=False)   
-                            new_ue.save()                        
-                            tabdipid=request.POST.getlist('filieres')
-                            listdip=Filiere.objects.filter(id__in=tabdipid)
-                            for dip in listdip :                     
-                                de=UEFilieres(ue=new_ue, filiere=dip)
-                                de.save()                                                            
-                            newoid=new_ue.pk
-                            #groupe 01
-                            if Groupe.objects.filter(ue=new_ue).filter(nom='01').count()==0 :                  
-                                newgr=Groupe(nom='01',ue=new_ue);
-                                newgr.save();
-                       #     messages.success(request, 'Enregistrement réussi Informations')
-                        else :
-                            objsave=formmodele.save()
-                            newoid=objsave.pk
-                        messages.success(request, 'Enregistrement réussi')
-                        if oid is None :
-                            return redirect('bo:administratif2',modele=modele,oid=newoid)
+                        try :
+                            if modele=="eleve" :
+                                
+                                #delete diplome  eleve
+                                dipleledel=FiliereEleve.objects.filter(eleve__id=oid)
+                                dipleledel.delete()
+                                # save many many with select 2
+                                new_eleve = formmodele.save(commit=False) 
+                                new_eleve.save()                         
+                                tabdipid=request.POST.getlist('filiere')
+                                listdip=Filiere.objects.filter(id__in=tabdipid)
+                                for dip in listdip :                     
+                                    de=FiliereEleve(eleve=new_eleve, filiere=dip)
+                                    de.save()                                
+                                newoid=new_eleve.pk
+                                
+                            elif modele=="UE" :
+                                #filiere
+                                uefil=UEFilieres.objects.filter(ue__id=oid)
+                                uefil.delete()
+                                new_ue = formmodele.save(commit=False)   
+                                new_ue.save()                        
+                                tabdipid=request.POST.getlist('filieres')
+                                listdip=Filiere.objects.filter(id__in=tabdipid)
+                                for dip in listdip :                     
+                                    de=UEFilieres(ue=new_ue, filiere=dip)
+                                    de.save()                                                            
+                                newoid=new_ue.pk
+                                #groupe 01
+                                if Groupe.objects.filter(ue=new_ue).filter(nom='01').count()==0 :                  
+                                    newgr=Groupe(nom='01',ue=new_ue);
+                                    newgr.save();
+                           #     messages.success(request, 'Enregistrement réussi Informations')
+                            else :
+                                objsave=formmodele.save()
+                                newoid=objsave.pk
+                            messages.success(request, 'Enregistrement réussi')
+                            if oid is None :
+                                return redirect('bo:administratif2',modele=modele,oid=newoid)
+                        except ValueError as e:
+                            messages.error(request,str(e))                    
                     else :
                         for key,value in formmodele.errors.items():
                                 messages.error(request,key+" "+ value.as_text())     
@@ -629,7 +617,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     if request.POST.get('Enregistrer2') :
                         inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
                         if saveFormset(request,inlineformset1) :
-                            inlineformset1 = AdresseFormSet(request.POST,instance=grfound)
+                            inlineformset1 = AdresseFormSet(instance=grfound)
                     else :
                         inlineformset1 = AdresseFormSet(instance=grfound)                                     
                     listefs.append({'titre':"Adresse","formset":inlineformset1,'numtab':"2","mode":extra})
@@ -661,7 +649,7 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                     GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm,extra=extra)                       
                     if request.POST.get('Enregistrer2')  :
                         inlineformset2 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
-                        if saveFormset(request,inlineformset1) :
+                        if saveFormset(request,inlineformset2) :
                             inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)  
                     else :
                         inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)                    
@@ -772,307 +760,6 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                                          "listelistefs":listelistefs                                                                                                                                                                                                                           
                                                          }) 
 
-def administratif(request,oid=None,modele=None,mode=None):
-    
-      
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='administratif').exists() :
-            
-            #if request.POST.get("modele") is not None :
-            #    modele=request.POST.get("modele");
-            
-            formFilter="";
-            #
-            #determination modele et filtre
-            #
-            if modele is None or modele=="groupe" :
-                 model=Groupe
-                 modelForm=GroupeForm
-                 formFilter=GroupeFormFilter(initial=request.POST)                                            
-            elif modele=="eleve" :
-                 model=Eleve
-                 modelForm=EleveForm 
-                 formFilter=EleveFormFilter(initial=request.POST)                               
-            elif modele=="enseignant" :
-                 model=Enseignant
-                 modelForm=EnseignantForm
-            elif modele=="diplome" :
-                 model=Diplome
-                 modelForm=DiplomeForm
-                 formFilter=DiplomeFormFilter(initial=request.POST)      
-            elif modele=="UE" :
-                 model=UE
-                 modelForm=UEForm
-                 formFilter=UEFormFilter(initial=request.POST)    
-            else :
-                 return deconnexion(request)
-             
-            
-              
-              
-            #traitement POST
-            #TRAITEMENT AJOUT MODIFICATION 
-            if request.method == 'POST' : 
-     
-                 ##############################################
-                   # sauvegarde form info
-                 #############################################
-                if request.POST.get("Enregistrerinf") :
-                    
-                    
-                    if oid is not None : 
-                       groupeinstance= model.objects.get(id=oid)                                   
-                       form = modelForm(request.POST,instance=groupeinstance)
-                    else :
-                        form = modelForm(request.POST)
-                   
-                    if form.is_valid():
-                        if modele=="eleve" :
-                            
-                            #delete diplome  eleve
-                            dipleledel=FiliereEleve.objects.filter(eleve__id=oid)
-                            dipleledel.delete()
-                            # save many many with select 2
-                            new_eleve = form.save(commit=False) 
-                            new_eleve.save()                         
-                            tabdipid=request.POST.getlist('filiere')
-                            listdip=Filiere.objects.filter(id__in=tabdipid)
-                            for dip in listdip :                     
-                                de=FiliereEleve(eleve=new_eleve, filiere=dip)
-                                de.save()                                
-                            newoid=new_eleve.pk
-                            
-                        elif modele=="UE" :
-                            #filiere
-                            uefil=UEFilieres.objects.filter(ue__id=oid)
-                            uefil.delete()
-                            new_ue = form.save(commit=False)   
-                            new_ue.save()                        
-                            tabdipid=request.POST.getlist('filieres')
-                            listdip=Filiere.objects.filter(id__in=tabdipid)
-                            for dip in listdip :                     
-                                de=UEFilieres(ue=new_ue, filiere=dip)
-                                de.save()                                                            
-                            newoid=new_ue.pk
-                            #groupe 01
-                            if Groupe.objects.filter(ue=new_ue).filter(nom='01').count()==0 :                  
-                                newgr=Groupe(nom='01',ue=new_ue);
-                                newgr.save();
-                       #     messages.success(request, 'Enregistrement réussi Informations')
-                        else :
-                            objsave=form.save()
-                            newoid=objsave.pk
-                        messages.success(request, 'Enregistrement réussi')
-                        if oid is None :
-                            return redirect('bo:administratif2',modele=modele,oid=newoid)
-                    else :
-                        for key,value in form.errors.items():
-                                messages.error(request,key+" "+ value.as_text())     
-                        return redirect('bo:administratif4',modele=modele,mode='add')
-
-                    
-                                                                           
-            #TRAITEMENT SUPPRESSION
-            if request.POST.get("Supprimer") :
-                    tabdel=request.POST.getlist("delgroup[]")
-                    #queryset deltet
-                    #groupesdel=model.objects.filter(id__in=tabdel)
-                    #groupesdel.delete()
-                    groupesdel=model.objects.get(id=tabdel[0])
-                    groupesdel.delete()
-                    
-            #fin traitement formulaire
-            user=request.user        
-           
-            
-            #filter liste
-            filterok=False
-            if request.method == 'POST' :
-                modeleliste=model.objects.all()  
-                for filterkey,filtervalue in request.POST.items() :
-                    if  filterkey.find("filter") !=-1 :
-                            filterok=True
-                            newfilterkey=filterkey.replace("filter","") 
-                            if filtervalue!="0" :                           
-                                kwargs = {
-                                '{0}__{1}'.format(newfilterkey, 'id'): filtervalue,
-                                }
-                                modeleliste=modeleliste.filter(**kwargs) 
-                            #else :  
-                            #    groupes=model.objects.all()       
-                            #groupes=model.objects.filter(newfilterkey=filtervalue)            
-                            
-            if not filterok :        
-                modeleliste=model.objects.all()             
-                    
-            #fin filtrer liste    
-            
-            modeleitem=""
-            # liste de base
-            formmodele = modelForm()
-            inlineformset1="vide"
-            inlineformset2 ="vide"
-            inlineformset3="vide"
-            formsettitre1=""
-            formsettitre2=""
-            formsettitre3=""
-            listeformset1=[]
-            listeformsettitre1=""
-            listeformset2=[]
-            listeformsettitre2=""
-            
-            listefs=[]
-            listelistefs=[]
-            
-            if oid is None :
-                gform = modelForm()
-            else:
-                grfound=model.objects.get(id=oid);
-                formmodele = modelForm(instance=grfound)  
-                modeleitem=str(grfound)                           
-                #######
-                #DIPLOME#
-                #######
-                if modele=="diplome" :
-                    
-                    PeriodeDiplomeFormset = inlineformset_factory(Diplome, Periode, fields=('nom','datedebut','datefin',),form=PeriodeForm)                                             
-                    if  request.POST.get('Enregistrer2')  :
-                        inlineformset1 = PeriodeDiplomeFormset(request.POST,instance=grfound)
-                        saveFormset(request,inlineformset1);
-                    inlineformset1 = PeriodeDiplomeFormset(instance=grfound)                                                      
-                    listefs.append({'titre':"Périodes","formset":inlineformset1,'numtab':"2"})
-                  
-                    DiplomeFiliereFormSet = inlineformset_factory(Diplome, Filiere,fields=('nom',),form=FiliereForm)                                                   
-                    if request.POST.get('Enregistrer3')  : 
-                        inlineformset2 = DiplomeFiliereFormSet(request.POST,instance=grfound)
-                        saveFormset(request,inlineformset2);
-                    inlineformset2 = DiplomeFiliereFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Filières","formset":inlineformset2,'numtab':"3"})
-                    
-                    for fifi in Filiere.objects.filter(diplome__id=oid) :    
-                        tempprefix="filierel" +str(fifi.id)                    
-                        FiliereEleveFormSet= inlineformset_factory(Filiere, FiliereEleve, fields=('eleve',),form=FiliereEleveForm)   
-                        if  request.POST.get('Enregistrer4')  :
-                            formsethtmltemp = FiliereEleveFormSet(request.POST,instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))
-                            if formsethtmltemp.is_valid():
-                                formsethtmltemp.save()
-                        
-                        formsethtmltemp = FiliereEleveFormSet(instance=fifi,prefix=tempprefix,queryset=FiliereEleve.objects.filter(filiere__id=fifi.id))                                                             
-                        listeformset1.append({'titre':fifi.nom ,'formset':formsethtmltemp})
-                    
-                    listelistefs.append({'titre':"Elèves","listformset":listeformset1,'numtab':"4"});        
-                    #DiplomeEleveFormSet = inlineformset_factory(Diplome, DiplomeEleve, fields=('eleve',),form=DiplomeEleveForm)       
-                    #inlineformset2 = DiplomeEleveFormSet(instance=grfound)
-                    #formsettitre2="Elèves"
-                elif modele=="eleve" :
-                    
-                     #ifo=InscriptionsEleveFormset();
-                    #formset=ifo.getform(instance=grfound)
-                    InscriptionFormSet = inlineformset_factory(Eleve, Inscription, fields=('groupe',),form=InscriptionForm)                         
-                    if request.POST.get('Enregistrer2') :
-                         inlineformset1 = ff(request.POST,instance=grfound)
-                         saveFormset(request,inlineformset1);
-                    inlineformset1 = InscriptionFormSet(instance=grfound)                                     
-                    listefs.append({'titre':"Inscriptions simples","formset":inlineformset1,'numtab':"2"});
-                    
-                    for annsco in AnneeScolaire.objects.all() :
-                                tempprefix="groupesel" +str(annsco.id)
-                                if  request.POST.get('Enregistrer3')  :
-                                    formsethtmltemp = InscriptionFormSet(request.POST,instance=grfound,prefix=tempprefix,queryset=Inscription.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))
-                                    saveFormset(request,formsethtmltemp);                           
-                                formsethtmltemp = InscriptionFormSet(instance=grfound,prefix=tempprefix,queryset=Inscription.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))                           
-                                #filtrer les select par anne scolaire                                
-                                for form in formsethtmltemp:
-                                        form.fields['groupe'].queryset = Groupe.objects.filter(ue__periode__diplome__anneescolaire=annsco)
-                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp})
-                    
-                    listelistefs.append({'titre':"Inscriptions complexes","listformset":listeformset1,'numtab':"3"});                  
-                                       
-                elif modele=="groupe" :
-                            
-                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm)                       
-                    if request.POST.get('Enregistrer2')  :
-                        inlineformset2 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
-                        saveFormset(request,inlineformset1);
-                    inlineformset2 = GroupesEnseignantsFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Enseignants","formset":inlineformset2,'numtab':"2"});   
-                    
-                    InscriptionFormSet = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm)
-                    if request.POST.get('Enregistrer3') :                       
-                        inlineformset1 = InscriptionFormSet(request.POST,instance=grfound) 
-                        saveFormset(request,inlineformset1);
-                    inlineformset1 = InscriptionFormSet(instance=grfound)                      
-                    listefs.append({'titre':"Inscriptions","formset":inlineformset1,'numtab':"3"});   
-                    
-                elif modele=="enseignant" :   
-                                                                     
-                    GroupesEnseignantsFormSet = inlineformset_factory(Enseignant, GroupesEnseignants, fields=('groupe',),form=GroupesEnseignantsForm)       
-                    if  request.POST.get('Enregistrer2') :                      
-                        inlineformset1 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
-                        saveFormset(request,inlineformset1);
-                    inlineformset1 = GroupesEnseignantsFormSet(instance=grfound)                    
-                    listefs.append({'titre':"Groupes","formset":inlineformset1,'numtab':"2"});   
-                    
-                    for annsco in AnneeScolaire.objects.all() :
-                                tempprefix="groupesel" +str(annsco.id)
-                                if  request.POST.get('Enregistrer3') :                                                                       
-                                    formsethtmltemp = GroupesEnseignantsFormSet(request.POST,instance=grfound,prefix=tempprefix,queryset=GroupesEnseignants.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))
-                                    saveFormset(request,formsethtmltemp);                                     
-                                formsethtmltemp = GroupesEnseignantsFormSet(instance=grfound,prefix=tempprefix,queryset=GroupesEnseignants.objects.filter(groupe__ue__periode__diplome__anneescolaire=annsco.id))                                                        
-                                listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp})                   
-                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3"}); 
-                
-                
-                elif modele=="UE" :
-                                                                            
-                    GroupesEnseignantsFormSet = inlineformset_factory(UE, Groupe, fields=('nom',),form=GroupeForm )   
-                    if  request.POST.get('Enregistrer2') :     
-                        inlineformset1 = GroupesEnseignantsFormSet(request.POST,instance=grfound)
-                        saveFormset(request,inlineformset1);
-                    inlineformset1 = GroupesEnseignantsFormSet(instance=grfound)                                         
-                    listefs.append({'titre':"Groupes","formset":inlineformset1,'numtab':"2"});  
-                                                          
-                    GroupesUEFormset = inlineformset_factory(Groupe, Inscription, fields=('eleve',),form=InscriptionForm)                                  
-                    for grue in Groupe.objects.filter(ue=grfound) :
-                                tempprefix="groupesue" +str(grue.id)
-                                if  request.POST.get('Enregistrer3') :                                      
-                                    tempGroupesUEFormset = GroupesUEFormset(request.POST,instance=grue,prefix=tempprefix)
-                                    saveFormset(request,tempGroupesUEFormset);                                      
-                                tempGroupesUEFormset = GroupesUEFormset(instance=grue,prefix=tempprefix)    
-                                listeformset1.append({'titre':grue.nom ,'formset':tempGroupesUEFormset})
-                    listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"3"});             
-                    
-                    GroupesEnseignantsFormSet = inlineformset_factory(Groupe, GroupesEnseignants, fields=('enseignant',),form=GroupesEnseignantsForm)                                    
-                    for grue in Groupe.objects.filter(ue=grfound) :
-                                tempprefix="groupesenseignant" +str(grue.id)
-                                if request.POST.get('Enregistrer4') :                                    
-                                    tempGroupesEnseignantsFormSet = GroupesEnseignantsFormSet(request.POST,instance=grue,prefix=tempprefix)
-                                    saveFormset(request,tempGroupesEnseignantsFormSet);                                   
-                                tempGroupesEnseignantsFormSet = GroupesEnseignantsFormSet(instance=grue,prefix=tempprefix)                                                                    
-                                listeformset2.append({'titre':grue.nom ,'formset':tempGroupesEnseignantsFormSet})
-                    listelistefs.append({'titre':"Enseignants","listformset":listeformset2,'numtab':"4"}); 
-
-                
-            
-           
-            return render(request, 'bo/administratif.html',{                                                                                                                                                                        
-                                                         "oid" : oid,"modele":modele,"modeleitem":modeleitem,"mode":mode,
-                                                         "formmodele" : formmodele,"modeleliste" : modeleliste,
-                                                         "formFilter":formFilter,  
-                                                         "listefs":listefs,
-                                                         "listelistefs":listelistefs                                                                                                                                                                                                                           
-                                                         }) 
-            
-                                                                                                                 
-                                                         #"formset3":inlineformset3,"formset2":inlineformset2,"formset1":inlineformset1, 
-                                                         #"formsettitre1":formsettitre1,"formsettitre2":formsettitre2,"formsettitre3":formsettitre3, 
-                                                         
-                                                         #"listeformset1" :listeformset1,"listeformset2" :listeformset2,
-                                                         #"listeformsettitre1":listeformsettitre1, "listeformsettitre2":listeformsettitre2 
-                                                            
-    #else:
-    return deconnexion(request)
-
 def init():
     
     from django.db.utils import OperationalError
@@ -1116,17 +803,10 @@ def index(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)    
-            
-            if user.groups.filter(name='eleve').exists() :
-            #return render(request, 'frontoffice/connecte.html',{'user':user,"ug":user.groups.all()})
-                return redirect('bo:eleve')
-        
-            if user.groups.filter(name='enseignant').exists() :
-                return redirect('bo:enseignant')
-            
+            login(request, user)               
             if user.groups.filter(name='administratif').exists() :
                 return redirect('bo:administratif')
+            else : return deconnexion(request)
             
             # Redirect to a success page.
             #...

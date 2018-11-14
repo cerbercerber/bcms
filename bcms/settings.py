@@ -63,7 +63,7 @@ INSTALLED_APPS = [
    # 'backoffice.apps.BackofficeConfig',
     
     'bo.apps.BoConfig',
-    #'fo.apps.FoConfig',
+    'fo.apps.FoConfig',
      
     'django.contrib.admin',
     'django.contrib.auth',

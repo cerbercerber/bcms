@@ -63,7 +63,7 @@ class EleveFormFilter (forms.Form):
     try :
          choicesdip=[[0, 'Tous']] + [ (d.id, str(d)) for d in Diplome.objects.all()]
          choicesgroupes=[[0, 'Tous']] + [ (d.id, str(d)) for d in Groupe.objects.all()]
-         diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
+         filiere__diplomefilter= forms.ChoiceField(choices=choicesdip, label="Diplome",                                      
                                          widget=forms.Select(attrs={'class': 'filter'}))
          #groupefilter=forms.ChoiceField(choices=choicesgroupes, label="Groupe",                                      
          #                                widget=forms.Select(attrs={'class': 'filter'}))

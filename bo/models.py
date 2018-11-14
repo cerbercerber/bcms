@@ -12,6 +12,8 @@ from simple_history.models import HistoricalRecords
 
 import copy
 
+from django.contrib.auth.models import User, Group, Permission
+
 
 class BasicModel(models.Model):
     class Meta:
@@ -135,14 +137,28 @@ class Eleve(Personne):
         if lastdip: return str(lastdip.filiere.diplome.nom)+" "+lastdip.filiere.diplome.anneescolaire.nom
         else : return " Aucune formation "
     
-                
+    def save(self, *args, **kwargs):
+    # Check how the current values differ from ._loaded_values. For example,
+    # prevent changing the creator_id of the model. (This example doesn't
+    # support cases where 'creator_id' is deferred).
+        nbinscr=Eleve.objects.filter(nom=self.nom,prenom=self.prenom).count()
+        if nbinscr>=1 : 
+            raise ValueError("Cet élève existe déjà !")
+        else : 
+            super().save(*args, **kwargs)
+            u,created = User.objects.get_or_create(username=self.nom, email=self.email)
+            if created:
+                u.set_password(self.nom)
+                u.save()  
+                new_group_ele, created = Group.objects.get_or_create(name='eleve')
+                new_group_ele.user_set.add(u);          
 
 class FiliereEleve(BasicModel):  
-    filiere=models.ForeignKey(Filiere,on_delete=models.PROTECT)
-    eleve=models.ForeignKey(Eleve,on_delete=models.PROTECT)
+    filiere=models.ForeignKey(Filiere,on_delete=models.CASCADE)
+    eleve=models.ForeignKey(Eleve,on_delete=models.CASCADE)
     history = HistoricalRecords()
     def nommodele(self):
-        return 'filiere '+str(self.filiere.nom)
+        return 'filiere '+self.filiere.nom
     def nommodeledb(self):
         return 'eleve/'+str(self.eleve.id)
     def nommodeledb2(self):
@@ -274,7 +290,7 @@ class Cours(models.Model):
                             (c.cours.datedebut<=datedebutcours and c.cours.datefin>=datefincours)) :
                                 pb=True
                                 #messerror=" chevauchement :"+str(c.cours)
-                                messerror=" oldcours "+str(c.cours)
+                                messerror=" chevauchement "+str(c.cours)
         if pb is True :        
             raise ValueError(messerror) 
         

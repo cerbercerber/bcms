@@ -20,13 +20,14 @@ from django.conf.urls import include
 
 #from fo.routers import router
 
-from bo import views as bo_views
+#from bo import views as bo_views
+#from fo import views as fo_views
 
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('',bo_views.index, name='index'),
-  
+    #path('',fo_views.index, name='index'),
+    path('', include('fo.urls')),
     #path('frontoffice/', include('frontoffice.urls')),
     path('bo/', include('bo.urls')),
     path('bodjango/', admin.site.urls),
