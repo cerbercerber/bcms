@@ -1,0 +1,73 @@
+{% extends "fo/front_generic.html" %}
+
+{% block espace %}
+Accueil
+{% endblock %}
+
+{% block content %}
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Accueil</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="inscriptions-tab" data-toggle="tab" href="#inscriptions" role="tab" aria-controls="inscriptions" aria-selected="false">Inscriptions</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="edt-tab" data-toggle="tab" href="#edt" role="tab" aria-controls="edt" aria-selected="false">Emploi du temps</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="devoirs-tab" data-toggle="tab" href="#devoirs" role="tab" aria-controls="devoirs" aria-selected="false">Devoirs</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    
+<div class="card">
+<div class="card-header">Accueil</div>
+<div class="card-body">
+    Bienvenue {{ user }}
+</div>
+</div> 
+</div>
+<!-- fin tab accueil -->
+  <div class="tab-pane fade" id="inscriptions" role="tabpanel" aria-labelledby="inscriptions-tab">
+  {% for insc in groupeeleve %} 
+  {% if insc.groupes %}
+  <div class="card">  
+<div class="card-header"><!-- Inscriptions {{insc.annsco}} -->  {% for fe in filiereeleve %} {% if fe.filiere.diplome.anneescolaire.id == insc.annsco.id %} {{fe.filiere}} {% endif %}{% endfor %}</div>
+<div class="card-body">
+<div class="table-responsive">
+   <table class="table">
+{% for ge in insc.groupes %} 
+<tr>
+ <td>
+ {{ ge.groupe.ue.nom }}
+</td>
+<td>
+{{ ge.groupe.nom }}
+</td>
+<td>
+{% for geens in ge.groupe.enseignants.all %} 
+{{ geens.nom }} {{ geens.prenom }}, 
+{% endfor %}
+</td>
+</tr>  
+ {% endfor %}     
+</table>
+</div>
+</div>
+</div> 
+{% endif %}
+{% endfor %}
+  </div>
+  <div class="tab-pane fade" id="edt" role="tabpanel" aria-labelledby="edt-tab"><div class="card"><div class="card-header">Emploi du temps</div><div class="card-body"><div id ="calendarel"></div></div></div></div>
+  <div class="tab-pane fade" id="devoirs" role="tabpanel" aria-labelledby="devoirs-tab">...</div>
+</div>
+
+
+{% endblock %}
+
+
+
+
