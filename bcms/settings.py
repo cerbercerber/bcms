@@ -169,5 +169,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = "/home/cerber/bcms/bo/static"
+STATIC_ROOT = "/home/cerber/bcms/static"
 
