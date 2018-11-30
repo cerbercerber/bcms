@@ -70,7 +70,6 @@ def search(request):
         entree['category'] = "UE " 
         searchtab.append(entree)
     
-
     return JsonResponse(searchtab,safe=False)
 
 
@@ -81,6 +80,29 @@ def deconnexion(request):
     logout(request)  
     return redirect('/bo/index',foo='bar')
 
+
+def edtresadup(request,idcours):
+ 
+ instcours=Cours.objects.get(id=idcours) 
+ try :
+    instcours.dupliquer()
+ except Exception as e:               
+    retjson={ 'error' : str(e)}
+ else :
+    retjson={ 'error' : "success"}
+ return JsonResponse(retjson,safe=False)
+
+
+def edtresasup(request,idcours):
+ try :
+    instcours=Cours.objects.get(id=idcours) 
+    instcours.delete()
+ except Exception as e:               
+    retjson={ 'error' : str(e)}
+ else :
+    retjson={ 'error' : "success"}
+ return JsonResponse(retjson,safe=False)
+         
 
 def edtresa(request,idcours):
  
@@ -158,7 +180,7 @@ def edtresa(request,idcours):
                           instcours.save()
                      except Exception as e:
                         instcours.delete()
-                        retjson={ 'error' : str(instcours.datedebut)+ str(e)}
+                        retjson={ 'error' : str(e)}
                      else : 
                         retjson={ 'error' : "success"}
          else :
@@ -172,7 +194,7 @@ def edtresa(request,idcours):
    
       if idcours is not 0 :         
          instcours=Cours.objects.get(id=idcours)       
-         cf=CoursForm(instance=instcours);
+         cf=CoursForm(instance=instcours)
       else :         
          cf=CoursForm
               
@@ -184,21 +206,24 @@ def edtresa(request,idcours):
       
     
 
-def edt(request):
+def edt(request,mode):
     
     modele=request.POST.get("modele");
     oid=request.POST.get("oid");
     
+    #test
+    #modele="UE";
+    #oid=1
     
-    """ modele="UE";
-    oid=1
+    """
     start:"2018-07-01"
     end:"2018-08-12" 
     
     
     data = {"message": "Message",
             "modele" : modele,
-            "oid" : oid}"""
+            "oid" : oid}
+    """
     jsondata=[]
     
     if modele=="UE" :
@@ -217,6 +242,8 @@ def edt(request):
         jsondata=Cours.objects.filter(salles__id=oid).distinct();
     elif modele=="groupe" :
         jsondata=Cours.objects.filter(groupes__id=oid).distinct();
+    elif modele=="filiere" :
+        jsondata=Cours.objects.filter(groupes__ue__filieres__id=oid).distinct();
             
     #export to json
     data=[]
@@ -237,21 +264,55 @@ def edt(request):
             else :
                 strgr=strgr+sa.nom
         
-        data.append(
-        {
-            'idcours' : jd.id,
-            'title' : strgr,
-            'start'  : jd.datedebut,
-            'end'    : jd.datefin
-        
-        });
+        if mode == "ls" : 
+            #start:Mon Oct 29 2018 00:00:00 GMT+0000
+            #end:Mon Dec 10 2018 00:00:00 GMT+0000
+            if request.POST.get("start") :
+                debdate=request.POST.get("start").replace(" GMT+0000","")
+                enddate=request.POST.get("end").replace(" GMT+0000","")
+                datedebdate=datetime.datetime.strptime(debdate, "%a %b %d %Y %H:%M:%S")
+                dateenddate=datetime.datetime.strptime(enddate, "%a %b %d %Y %H:%M:%S")
+                datedebdate=datedebdate.replace(tzinfo=utc)
+                dateenddate=dateenddate.replace(tzinfo=utc)
+                if jd.datefin>datedebdate and jd.datefin<=dateenddate :
+                    data.append(
+                           {
+                        'idcours' : jd.id,
+                        'title' : strgr,
+                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M:%S"),
+                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M:%S")
+                    
+                    });
+            else :
+                  data.append(
+                           {
+                        'idcours' : jd.id,
+                        'title' : strgr,
+                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M:%S"),
+                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M:%S")
+                    
+                    });
+                
+        else :
+            data.append(
+                   {
+                'idcours' : jd.id,
+                'title' : strgr,
+                'start'  : jd.datedebut,
+                'end'    : jd.datefin
+            
+            });
      
     #print('----data ----')
     #print(data) 
     
     #pdb.set_trace()  
-        
-    return JsonResponse(data,safe=False)
+    if mode == "ls":       
+        listdata ={"data":data}
+        return JsonResponse(listdata,safe=False)
+    #mode='ca'
+    else  :  
+        return JsonResponse(data,safe=False)
  
 def changeonformset(formset):
     changeonformset=False
@@ -384,7 +445,10 @@ def administratifliste(request,modele=None):
                  modelForm=FiliereForm
             elif modele=="salle" :
                  model=Salle
-                 modelForm=SalleForm   
+                 modelForm=SalleForm 
+            elif modele=="cours" :
+                 model=Cours
+                 modelForm=CoursForm     
             else :
                  return deconnexion(request)
              
@@ -460,6 +524,9 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
             elif modele=="salle" :
                  model=Salle
                  modelForm=SalleForm
+            elif modele=="cours" :
+                 model=Cours
+                 modelForm=CoursForm   
             else :
                  return deconnexion(request)
              
@@ -750,14 +817,15 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 listeformset2.append({'titre':grue.nom ,'formset':tempGroupesEnseignantsFormSet,"mode":extra})
                     listelistefs.append({'titre':"Enseignants","listformset":listeformset2,'numtab':"4"}); 
 
-                
-            
+                    
+           
            
             return render(request, 'bo/administratifdetail.html',{                                                                                                                                                                        
                                                          "oid" : oid,"modele":modele,"modeleitem":modeleitem,"mode":mode,
                                                          "formmodele" : formmodele,
                                                          "listefs":listefs,
-                                                         "listelistefs":listelistefs                                                                                                                                                                                                                           
+                                                         "listelistefs":listelistefs
+                                                                                                                                                                                                                                                                       
                                                          }) 
 
 def init():

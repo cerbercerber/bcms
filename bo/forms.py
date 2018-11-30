@@ -176,7 +176,13 @@ class PeriodeForm(BasicForm):
 class CoursForm(BasicForm):
      class Meta:
         model = Cours
-        fields = '__all__'      
+        fields = '__all__'   
+        
+
+class DevoirForm(BasicForm):
+     class Meta:
+        model = Devoir
+        fields = '__all__'    
 ########
 #form set marche pas
 ########

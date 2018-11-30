@@ -16,8 +16,11 @@ urlpatterns = [
     
     path('search', views.search, name='search'),
     
-    path('administratifedt', views.edt, name='edt'),
+    path('administratifedt/<str:mode>', views.edt, name='edt'),
     path('administratifedtresa/<int:idcours>', views.edtresa, name='edtresa'), 
+    path('administratifedtresadup/<int:idcours>', views.edtresadup, name='edtresadup'), 
+    
+    path('administratifedtsuppresa/<int:idcours>',views.edtresasup, name='edtresasup'),
     #path('frontoffice/administratif/<int:grid>', views.connecteadministratif, name='connectadministratif2'),
     #path('enseignant', views.enseignant, name='enseignant'),
     path('deconnexion', views.deconnexion, name='deconnexion'),    

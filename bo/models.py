@@ -141,17 +141,19 @@ class Eleve(Personne):
     # Check how the current values differ from ._loaded_values. For example,
     # prevent changing the creator_id of the model. (This example doesn't
     # support cases where 'creator_id' is deferred).
-        nbinscr=Eleve.objects.filter(nom=self.nom,prenom=self.prenom).count()
-        if nbinscr>=1 : 
-            raise ValueError("Cet élève existe déjà !")
-        else : 
-            super().save(*args, **kwargs)
-            u,created = User.objects.get_or_create(username=self.nom, email=self.email)
-            if created:
+        if self._state.adding :
+            nbinscr=Eleve.objects.filter(nom=self.nom,prenom=self.prenom).count()
+            if nbinscr>=1 : 
+                raise ValueError("Cet élève existe déjà !")
+            else : 
+                super().save(*args, **kwargs)
+                u = User.objects.get_or_create(username=self.nom, email=self.email)
                 u.set_password(self.nom)
                 u.save()  
                 new_group_ele, created = Group.objects.get_or_create(name='eleve')
-                new_group_ele.user_set.add(u);          
+                new_group_ele.user_set.add(u)
+        else :
+            super().save(*args, **kwargs)       
 
 class FiliereEleve(BasicModel):  
     filiere=models.ForeignKey(Filiere,on_delete=models.CASCADE)
@@ -264,6 +266,7 @@ class Cours(models.Model):
     salles= models.ManyToManyField(Salle,through="CoursSalles")
     datedebut=models.DateTimeField()
     datefin=models.DateTimeField()
+    #duplication=models.BooleanField()
     #history = HistoricalRecords()
     def __str__(self): 
         str="";  
@@ -274,7 +277,10 @@ class Cours(models.Model):
         str=str+" salle :"
         for es in self.salles.all() :
             str=str+es.nom
-        str=str+" "+self.datedebut.strftime('%Y-%m-%d %H:%M')+"\r\n "+self.datefin.strftime('%Y-%m-%d %H:%M')
+        if self.datedebut.strftime('%d-%m-%Y') != self.datefin.strftime('%d-%m-%Y') :
+            str=str+" "+self.datedebut.strftime('%d-%m-%Y %H:%M')+"\r\n "+self.datefin.strftime('%d-%m-%Y %H:%M')
+        else : 
+            str=str+" "+self.datedebut.strftime('%d-%m-%Y')+"\r\n "+self.datefin.strftime('%H:%M')+"-"+self.datefin.strftime('%H:%M')
         return str
                
     def verifResaSalle(self):
@@ -297,6 +303,42 @@ class Cours(models.Model):
     def save(self, *args, **kwargs):
         super(Cours, self).save(*args, **kwargs)
         self.verifResaSalle()
+    
+    #def dnd(self, *args, **kwargs):   
+        
+        
+    def dupliquer (self, *args, **kwargs):   
+        #if self.duplication :
+        datefinperiode=self.groupes.first().ue.periode.datefin                  
+        i=7
+        courtemp=Cours.objects.get(id=self.id)  
+        while courtemp.datedebut<datefinperiode : 
+            courtemp=Cours.objects.get(id=self.id)             
+            courtemp.id=None      
+            courtemp.datedebut=courtemp.datedebut+datetime.timedelta(days=i)
+            courtemp.datefin=courtemp.datefin+datetime.timedelta(days=i) 
+            courtemp.save()
+            for sa in self.salles.all() :
+                cs = CoursSalles(cours=courtemp,salle=sa)
+                cs.save()
+            for gr in self.groupes.all() :
+                cg = CoursGroupes(cours=courtemp,groupe=gr)
+                cg.save()            
+            i=i+7
+            
+            try :
+                courtemp.verifResaSalle() 
+            except Exception as e :
+                courtemp.delete() 
+                return str(e) 
+                
+                #break            
+           
+
+             
+             
+            
+       
 
 #
 class CoursGroupes(models.Model):  
@@ -307,4 +349,21 @@ class CoursGroupes(models.Model):
 class CoursSalles(models.Model):  
     cours=models.ForeignKey(Cours,on_delete=models.CASCADE)
     salle=models.ForeignKey(Salle,on_delete=models.CASCADE)
+    
+class Devoir(models.Model):  
+    EXO = 'EXO'
+    ORA = 'ORA'
+    TYPE_DEVOIR = ((EXO, 'Exercices'),(ORA, 'Oral'),)
+    
+    cours=models.ForeignKey(Cours,on_delete=models.CASCADE,null=True, blank=True)
+    type= models.CharField(max_length=3,choices=TYPE_DEVOIR,default=EXO,)
+ 
+class Absence(models.Model):  
+    JUSTI = 'JUSTI'
+    PASJU = 'PASJU'
+    TYPE_ABSENCE = ((JUSTI, 'Justifié'),(PASJU, 'Pas justifié'),)
+    
+    cours=models.ForeignKey(Cours,on_delete=models.CASCADE)
+    eleve=models.ForeignKey(Eleve,on_delete=models.CASCADE)
+    type= models.CharField(max_length=5,choices=TYPE_ABSENCE,default=PASJU,)  
     #history = HistoricalRecords()

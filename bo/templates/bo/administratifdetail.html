@@ -84,7 +84,7 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 </div>
 <div class="card-body">
   
-  {{ fstemp.formset.management_form }}
+   {{ fstemp.formset.management_form }}
     {% for form in fstemp.formset %}   
         <div class="card">
             <div class="card-header">
@@ -147,6 +147,7 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 </div>
 
 {% endfor %}
+
 
 
 
@@ -217,7 +218,21 @@ action="{% url 'bo:administratif' %}/{{modele}}/add"
 </div>
 </div>
 <div class="card-body">
+<div class="table-responsive" id="calendartablediv" style="display:none">
+<table id="calendartable" class="table" style="width:100%">
+<thead>
+<tr>    
+<!--<th style="display:none">idcours</th>-->
+<th>Titre</th>  
+<th>Date de début</th>  
+<th>Date de fin</th> 
+<th></th>                                                                       
+</tr>   
+</thead>  
+</table>
+</div>
 <div id="calendart"></div>
+
 </div>
 </div>
 <div class="card-body" id="loading" style="display: none">

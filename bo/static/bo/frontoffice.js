@@ -1,6 +1,8 @@
 
 
 function dispModal(idcours) { 
+
+       // var idcours=event.idcours;
     //if (event.popup) {
         
       //  if(event.isinmoodle)
@@ -11,59 +13,50 @@ function dispModal(idcours) {
     
 }
 
-
-function dropresize(ancienevent)
+function dispImp()
 {
-    //date periode
-    /*var pdeb= moment($("input[name='datedebut']").val(),"DD/MM/YY");
-    var pfin= moment($("input[name='datefin']").val(),"DD/MM/YY");  
-    
-    console.log(pdeb);
-    console.log(pfin);
-    //if(date<now || modifpossible=="non" || date>pfin || date<pdeb)
-     var now = moment();
-        if(ancienevent.start<now || ancienevent.start<pdeb || ancienevent.start>pfin )
-                {
-            $("#modalerrordep").modal('show');
-            $('#calendar').fullCalendar('refetchEvents');
-                }
-        else*/
-            {
-     var datedebut=ancienevent.start.format('YYYY-MM-DD HH:mm');
-    var datefin=ancienevent.end.format('YYYY-MM-DD HH:mm');
+    console.log("imp");
+    $("#modalResaimp").modal('show');
+}
 
+
+function dropresize(newevent)
+{
+   
+       
+    var datedebut=newevent.start.format('YYYY-MM-DD HH:mm');
+    var datefin=newevent.end.format('YYYY-MM-DD HH:mm');
+    var momentdeb=moment(datedebut);
+    var momentfin=moment(datefin);
     
-    //console.log(ancienevent);
-    //var dateres=
-    $.post('/bo/administratifedtresa/'+ancienevent.idcours,
+    if (momentdeb.isBefore() || momentfin.isBefore()) 
+    {
+        dispImp();
+         $('#calendart').fullCalendar('refetchEvents');
+    }
+    else
+    {    
+    $.post('/bo/administratifedtresa/'+newevent.idcours,
      {dndresize:"oui",
      datedebut:datedebut,
      datefin:datefin},function(data){
-        
-      
-        //var tdata = jQuery.parseJSON(data);
-        console.log(data);
+                   
+        //console.log(data);
         if(data.error!="success")
-        {
-            //console.log("ok");
-            $("#pmessage").html(data.error);
-            //$('#myModal').modal('hide');
+        {         
+            $("#pmessage").html(data.error);          
             $("#modalerror").modal('show');
             
         }
         else
         {
         //oTable.ajax.reload();
-        //$('#myModal').modal('hide');
-        
+        //$('#myModal').modal('hide');       
         }
-
         $('#calendart').fullCalendar('refetchEvents');
- 
-
-        
+         
     });
-            }
+    }
 }
 
 
@@ -158,6 +151,15 @@ $('label[for='+  id  +']').html($('label[for='+  id  +']').html()+ '<span class=
 */
 
 //autcomplete
+ $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+            item.label = item.label.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(this.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), 
+            "<span style='white-space:nowrap;background-color:lemonchiffon'><strong>$1</strong></span>"
+            );
+            return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append("<a>" + item.label + "</a>")
+                    .appendTo(ul);
+        };
  $.widget( "custom.catcomplete", $.ui.autocomplete, {
       _create: function() {
         this._super();
@@ -202,16 +204,47 @@ $( "#searchall" ).catcomplete({
       }
     } );
 
-
+//LIST
+var oTable=$('#calendartable').DataTable( {
+    "ajax": {
+        "url": "/bo/administratifedt/ls",
+        "type": "POST",
+        "data": {
+        modele: $("#admmod").val(),
+        oid: $("#admoid").val(),
+        start: function(d){ if ($('#calendart').fullCalendar( 'getView')) return $('#calendart').fullCalendar( 'getView').start;return null; },
+        end: function(d){ if ($('#calendart').fullCalendar( 'getView')) return $('#calendart').fullCalendar( 'getView').end;return null; }
+   
+        },
+        
+    },
+    "columns": [
+        // { "data": "idcours" },
+         { "data": "title" },
+         { "data": "start" },
+         { "data": "end" },
+        { data: 'idcours', render: function (data, type, row) {
+                return '<a href="/bo/administratif/cours/'+data+'"><i class="fas fa-info-circle text-warning"></i>&nbsp;détails</a>';
+        } }
+          
+     ],
+      "paging":   false,
+       "ordering": true,
+       "info":     false,
+       "searching": false
+    } );
+    
+    
+    
 //CALENDAR 
 $('#calendart').fullCalendar({
     events: 
     {
-        url: "/bo/administratifedt",
+        url: "/bo/administratifedt/ca",
         type: 'POST',
         data: {
           modele: $("#admmod").val(),
-          oid: $("#admoid").val()
+          oid: $("#admoid").val(),
         },       
         color: 'blue',   // a non-ajax option
         textColor: 'black' // a non-ajax option
@@ -220,17 +253,22 @@ $('#calendart').fullCalendar({
     eventDrop:function(ancienevent, delta, revertFunc)  { 
 
         dropresize(ancienevent);
+        oTable.ajax.reload();
     },
     eventResize:function(ancienevent, delta, revertFunc)  { 
 
         dropresize(ancienevent);
+        oTable.ajax.reload();
     },
     
     eventClick : function(event) 
     {
         console.log("modif event event :");
         console.log(event);
-        dispModal(event.idcours);
+        if (event.start.isBefore() || event.end.isBefore())
+             dispImp();
+        else
+            dispModal(event.idcours);
     },
      dayClick : function(date, jsEvent, view) 
     {
@@ -238,20 +276,40 @@ $('#calendart').fullCalendar({
         console.log(date);
         //select de l'heure
         var heureminuteclic=date.format('HH:mm');  
-        dispModal(0);
+        if (date.isBefore())
+            dispImp();
+        else
+            dispModal(0);
     },
     header: {
         left: 'prev,next today',
         center: 'title',
-        right: 'agendaWeek,agendaDay'
+        right: 'month,agendaWeek,agendaDay'
       },
-    defaultView: 'agendaWeek',
+    defaultView: 'month',
     allDaySlot : false,
     displayEventEnd:true,
     minTime : "07:00:00",
     maxTime : "21:00:00",
     height:'auto',
     locale: 'fr',
+    //clic sur la crois suppression
+    eventRender: function(event, element) {
+        element.append( "<a href='#' class='btn closeon'><i class='fas fa-times-circle text-danger'></i></a>" );
+        element.find(".closeon").click(function(e) {          
+            e.preventDefault();
+           // console.log(event.idcours);
+           var idcours=event.idcours;
+            $.post('/bo/administratifedtsuppresa/'+idcours,function(data){   
+                $('#calendart').fullCalendar('refetchEvents');
+                oTable.ajax.reload();
+                // $('#calendar').fullCalendar('removeEvents',event._id);
+            });
+            return false;
+            
+         
+        });
+    },
    loading: function (bool) { 
                     if (bool) 
                     {
@@ -261,12 +319,33 @@ $('#calendart').fullCalendar({
                     
                 else if (!bool)
                       {
+                      //loading
                       $('#loading').hide();
                       $("#panelcalendar").css({"visibility": "visible"});
                       //heading calendar
-                        $("#panelheadingcalendar").replaceWith($(".fc-toolbar"));                      
-                        $(".fc-button").attr('class',"btn btn-link");
-
+                      $("#panelheadingcalendar").replaceWith($(".fc-toolbar"));                      
+                      $(".fc-button").attr('class',"btn btn-link");
+                      //ad liste button  
+                      $("#listcal").remove();
+                      if($("#calendart").is(":visible"))                    
+                        $(".fc-right .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='liste'>Liste</a>");  
+                      else
+                        $(".fc-right .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='cal'>Calendrier</a>");                     
+                      //hide disp calendar
+                      $("#listcal").on('click', function(e)
+                         {
+                            e.preventDefault();
+                            var mode=$(this).attr("mode");
+                            if (mode == "liste") {$(this).attr("mode","cal");$(this).html("Calendrier"); $("#calendartablediv").show();$("#calendart").hide();}
+                            else /*if (mode == "cal")*/  {$(this).attr("mode","liste");$(this).html("Liste"); $("#calendartablediv").hide();$("#calendart").show();}
+                         });
+                         oTable.ajax.reload();
+                      //reload table avec Dates
+                      $(".fc-right button").on('click', function(e)
+                         {                      
+                            oTable.ajax.reload();
+                          });
+                  
             
                       }
                       }
@@ -274,6 +353,7 @@ $('#calendart').fullCalendar({
     
     });  
     
+
 
 
 //RENDER TAB
