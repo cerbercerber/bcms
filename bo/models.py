@@ -147,11 +147,12 @@ class Eleve(Personne):
                 raise ValueError("Cet élève existe déjà !")
             else : 
                 super().save(*args, **kwargs)
-                u = User.objects.get_or_create(username=self.nom, email=self.email)
-                u.set_password(self.nom)
-                u.save()  
-                new_group_ele, created = Group.objects.get_or_create(name='eleve')
-                new_group_ele.user_set.add(u)
+                u, created  = User.objects.get_or_create(username=self.nom, email=self.email)
+                if created:
+                    u.set_password(self.nom)
+                    u.save()  
+                    new_group_ele,created= Group.objects.get_or_create(name='eleve')
+                    new_group_ele.user_set.add(u)
         else :
             super().save(*args, **kwargs)       
 

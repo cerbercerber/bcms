@@ -279,8 +279,8 @@ def edt(request,mode):
                            {
                         'idcours' : jd.id,
                         'title' : strgr,
-                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M:%S"),
-                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M:%S")
+                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M"),
+                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M")
                     
                     });
             else :
@@ -288,8 +288,8 @@ def edt(request,mode):
                            {
                         'idcours' : jd.id,
                         'title' : strgr,
-                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M:%S"),
-                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M:%S")
+                        'start'  : jd.datedebut.strftime("%d-%m-%Y %H:%M"),
+                        'end'    : jd.datefin.strftime("%d-%m-%Y %H:%M")
                     
                     });
                 

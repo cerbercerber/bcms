@@ -282,9 +282,10 @@ $('#calendart').fullCalendar({
             dispModal(0);
     },
     header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,agendaWeek,agendaDay'
+        left: 'prev,next,month,agendaWeek,agendaDay',
+        /*center: 'title',*/
+        right:'title',
+        //left: 'month,agendaWeek,agendaDay',
       },
     defaultView: 'month',
     allDaySlot : false,
@@ -325,28 +326,40 @@ $('#calendart').fullCalendar({
                       //heading calendar
                       $("#panelheadingcalendar").replaceWith($(".fc-toolbar"));                      
                       $(".fc-button").attr('class',"btn btn-link");
+                      $(".fc-left .fc-button-group button").each(function(e){
+                         var arialabel=$(this).attr("aria-label");
+                         if (arialabel!="next" && arialabel!="prev")
+                         {
+                            $(this).html($(this).html().replace('<i class="fas fa-arrow-circle-down"></i> ',""));
+                            $(this).html('<i class="fas fa-arrow-circle-down"></i> '+ $(this).html());   
+                        }       
+                      });  
                       //ad liste button  
                       $("#listcal").remove();
                       if($("#calendart").is(":visible"))                    
-                        $(".fc-right .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='liste'>Liste</a>");  
+                        $(".fc-left .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='liste'><i class='fas fa-arrow-circle-down'></i> Liste</a>");  
                       else
-                        $(".fc-right .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='cal'>Calendrier</a>");                     
+                        $(".fc-left .fc-button-group").append("<a href='#' id='listcal' class='btn btn-link' mode='cal'><i class='fas fa-arrow-circle-down'></i> Calendrier</a>");                     
                       //hide disp calendar
                       $("#listcal").on('click', function(e)
                          {
                             e.preventDefault();
                             var mode=$(this).attr("mode");
-                            if (mode == "liste") {$(this).attr("mode","cal");$(this).html("Calendrier"); $("#calendartablediv").show();$("#calendart").hide();}
-                            else /*if (mode == "cal")*/  {$(this).attr("mode","liste");$(this).html("Liste"); $("#calendartablediv").hide();$("#calendart").show();}
+                            if (mode == "liste") {$(this).attr("mode","cal");$(this).html("<i class='fas fa-arrow-circle-down'></i> Calendrier"); $("#calendartablediv").show();$("#calendart").hide();}
+                            else /*if (mode == "cal")*/  {$(this).attr("mode","liste");$(this).html("<i class='fas fa-arrow-circle-down'></i> Liste"); $("#calendartablediv").hide();$("#calendart").show();}
                          });
                          oTable.ajax.reload();
                       //reload table avec Dates
-                      $(".fc-right button").on('click', function(e)
-                         {                      
+                     /* $(".fc-left button[aria-label='next']").on('click', function(e)
+                         {
+                            //console.log("click left button");                      
                             oTable.ajax.reload();
                           });
-                  
-            
+                          
+                     */
+                      $(".fc-right").find('h2').replaceWith(function() {
+                            return '<h2 style="font-size:1rem;padding-top:6px">' + $(this).text() + '</span></h2>';
+                            });
                       }
                       }
     
