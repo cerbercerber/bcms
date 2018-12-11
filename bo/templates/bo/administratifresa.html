@@ -80,8 +80,7 @@
             success: function (data) { 
              if (data.error=="success")
              {          
-               $('#bodyformresa').modal('hide');
-               $('#calendart').fullCalendar('refetchEvents');
+               $('#bodyformresa').modal('hide');              
              }
              else
              {
@@ -89,6 +88,7 @@
                 $("#errorresa").html(data.error);
                 $("#errorformresa").show();
              }
+             $('#calendart').fullCalendar('refetchEvents');
             }
           });
 

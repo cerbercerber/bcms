@@ -331,7 +331,8 @@ class Cours(models.Model):
                 courtemp.verifResaSalle() 
             except Exception as e :
                 courtemp.delete() 
-                return str(e) 
+                raise  ValueError(e)
+                #return str(e) 
                 
                 #break            
            
