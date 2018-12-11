@@ -7,15 +7,17 @@ function dispModal(idcours) {
         
       //  if(event.isinmoodle)
       
-       $('#modalResa').load('/bo/administratifedtresa/'+idcours);    
-       $('#modalResa').modal('show');
-        return false;
+       $('#modalResa').load('/bo/administratifedtresa/'+idcours, function() {
+        //alert( "Load was performed." );
+        $('#modalResa').modal('show');
+        });
+      
     
 }
 
 function dispImp()
 {
-    console.log("imp");
+    //console.log("imp");
     $("#modalResaimp").modal('show');
 }
 
