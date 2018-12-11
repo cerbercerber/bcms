@@ -1,6 +1,6 @@
-  <form method="POST" name="formresa" id="formresa" >  
+ <div class="modal-dialog" role="document">    
+  <form method="POST" name="formresa" id="formresa">  
    {% csrf_token %}
-  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Cours</h5>
@@ -23,8 +23,9 @@
         <input type="submit" class="btn btn-link"  id="dupliquerresa"  value="Dupliquer"/>
       </div>
     </div>
+    </form>
   </div>
-  </form>
+  
   
   
   <script>
