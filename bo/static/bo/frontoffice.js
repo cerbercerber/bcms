@@ -284,11 +284,26 @@ $('#calendart').fullCalendar({
             dispModal(0);
     },
     header: {
-        left: 'prev,next,month,agendaWeek,agendaDay',
+        left: 'prev,next,timelineCustom,month,agendaWeek,agendaDay',
         /*center: 'title',*/
         right:'title',
         //left: 'month,agendaWeek,agendaDay',
       },
+    views:{
+    timelineCustom: 
+    {
+    type: 'timeline',
+    buttonText: 'Année', 
+    dateIncrement: { years: 1 },
+    slotDuration: { months: 1 },
+    visibleRange: function(currentDate) {
+        return {
+            start: currentDate.clone().startOf('year').add({ months: 8}),
+            end: currentDate.clone().endOf("year").add({ months: 10})
+        };
+    }
+    }
+    },
     defaultView: 'month',
     allDaySlot : false,
     displayEventEnd:true,

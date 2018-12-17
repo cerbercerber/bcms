@@ -7,18 +7,23 @@ from django.db.utils import OperationalError
 
 #from django.forms import inlineformset_factory
 from django.forms.models import *
+from email.policy import default
 
 class BasicForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)       
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
+            #if type(visible)!='BooleanField':
+                visible.field.widget.attrs['class'] = 'form-control'
    
     def is_valid(self, *args, **kwargs):
         valid= super(ModelForm, self).is_valid()
         for visible in self.visible_fields():
             if visible.errors  :
-                visible.field.widget.attrs['class'] = 'form-control is-invalid'
+                #if type(visible)!='BooleanField':
+                    visible.field.widget.attrs['class'] = 'form-control is-invalid'
+                #else :
+                #    visible.field.widget.attrs['class'] = 'is-invalid'
         return valid
         
 class AdresseForm(BasicForm):
@@ -182,7 +187,24 @@ class CoursForm(BasicForm):
 class DevoirForm(BasicForm):
      class Meta:
         model = Devoir
+        fields = '__all__'
+
+class ControleForm(BasicForm):
+     class Meta:
+        model = Controle
         fields = '__all__'    
+
+class NoteForm(BasicForm):
+     #bareme=forms.CharField()
+     class Meta:      
+        model = Note
+        fields = '__all__' 
+     ''' 
+         def __init__(self, *args, **kwargs):
+         super(form,self).__init(*args, **kwargs)
+         self.fields['bareme'].initial ="titi"# model.controle.bareme
+     '''   
+  
 ########
 #form set marche pas
 ########

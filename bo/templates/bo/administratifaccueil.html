@@ -1,0 +1,67 @@
+{% extends "bo/administratifbase.html" %}
+
+{% block liste %}
+
+ <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'bo:administratif'  %}">Accueil</a></li>
+    </ol>
+</nav>
+<div class="card">
+  <div class="card-header">
+    Menu
+  </div>
+  <ul class="list-group list-group-flush"> 
+    <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/diplome" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Diplômes</a>
+  </li>
+  <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/filiere" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Filières</a> 
+  </li> 
+ <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/UE" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;UE</a> 
+  </li> 
+  <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/salle" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Salles</a> 
+ <!--  </li> 
+   <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/cours" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Cours</a> 
+  </li> -->
+  <!-- <li class="list-group-item">
+   <a href="{% url 'bo:administratif'  %}/groupe" class="btn btn-link"><i class="fas fa-book"></i>&nbsp;&nbsp;&nbsp;Groupe</a>
+  </li>-->
+  <li class="list-group-item">
+  <a href="{% url 'bo:administratif' %}/eleve " class="btn btn-link"><i class="fas fa-users"></i>&nbsp;&nbsp;&nbsp;Eleves</a> 
+  </li>
+  <li class="list-group-item">
+  <a href="{% url 'bo:administratif'  %}/enseignant" class="btn btn-link"><i class="fas fa-users"></i>&nbsp;&nbsp;&nbsp;Enseignants</a>
+  </li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Historique
+  </div>
+  <table class="table dt"> 
+  <thead><tr><th>Objet</th><th>Informations</th><th>Utilisateur</th><th>Date de modification</th><th>Raison</th><th></th></tr></thead>
+  <tbody>
+  {% for lh in listhisto %}
+  <tr>
+  <td>{{lh.modele}}</td>
+  <td>{{lh.info}}</td>
+  <td>{{lh.user}}</td>
+  <td>{{lh.date}}</td>
+  <td>{{lh.reason}}</td>
+  <td>{% if lh.reason != "Suppression" %}<a href="{% url 'bo:administratif'  %}/{{lh.link}}">Détails</a>{% endif %}</td>
+  </tr>
+  {%endfor%}
+  </tbody>
+  </table>
+</div>
+ 
+{% endblock %}
+
+
+
+

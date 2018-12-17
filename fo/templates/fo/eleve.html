@@ -1,5 +1,5 @@
 {% extends "fo/front_generic.html" %}
-
+{% load staticfiles %}
 {% block espace %}
 Accueil
 {% endblock %}
@@ -24,8 +24,8 @@ Accueil
 -->
 <div class="tab-content" id="myTabContent">
   <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    
-<div class="card border-primary">
-<div class="card-header border-primary text-primary">Accueil</div>
+<div class="card">
+<div class="card-header">Accueil</div>
 <div class="card-body">
     Bienvenue {{ user }}
 </div>
@@ -43,11 +43,12 @@ Accueil
 {% for ge in insc.groupes %} 
 <tr>
  <td>
- {{ ge.groupe.ue.nom }}
+ {{ ge.groupe.ue.nom }} groupe {{ ge.groupe.nom }}
 </td>
 <td>
-{{ ge.groupe.nom }}
+{{ge.groupe.ue.periode}}
 </td>
+<td>{{ge.groupe.ue.get_cours.count}}</td>
 <td>
 {% for geens in ge.groupe.enseignants.all %} 
 {{ geens.nom }} {{ geens.prenom }}, 
@@ -62,11 +63,59 @@ Accueil
 {% endif %}
 {% endfor %}
   </div>
-  <div class="tab-pane fade" id="edt" role="tabpanel" aria-labelledby="edt-tab"><div class="card"><div class="card-header">Emploi du temps</div><div class="card-body"><div id ="calendarel"></div></div></div></div>
-  <div class="tab-pane fade" id="devoirs" role="tabpanel" aria-labelledby="devoirs-tab">...</div>
+  <div class="tab-pane fade" id="edt" role="tabpanel" aria-labelledby="edt-tab">
+  
+  <div class="card">     
+  <div class="card-header"><div id="panelheadingcalendar">
+</div></div>     
+  <div class="card-body" id="loading" style="display: none">
+    <img src="{% static 'bo/Preloader_1.gif' %}"  id="gif" style="display: block; margin: 0 auto;">
+ </div>
+  <div class="card-body" id="panelcalendar">     
+  <div id ="calendarel"></div>
+  <div class="table-responsive" id="calendartablediv" style="display:none">
+<table id="calendartable" class="table" style="width:100%">
+<thead>
+<tr>    
+<!--<th style="display:none">idcours</th>-->
+<th>Titre</th>  
+<th>Date de début</th>  
+<th>Date de fin</th> 
+<th></th>                                                                       
+</tr>   
+</thead>  
+</table>
+</div>     
+  </div>     
+  </div>
+  </div>
+  <div class="tab-pane fade" id="note" role="tabpanel" aria-labelledby="note-tab">
+  <div class="card">     
+  <div class="card-header">Notes</div>     
+  <div class="card-body">     
+  <div class="table-responsive">
+   <table class="table">
+{% for nott in listenotes %} 
+<tr>
+ <td>
+ {{ nott.controle.cours.get_groupes }} 
+</td>
+<td>
+ {{ nott.controle.cours.get_date_cours}} {{ nott.controle.cours.get_heure_debut}}-{{ nott.controle.cours.get_heure_fin}} 
+</td>
+<td>
+{{nott.note}}
+</td>
+</tr>  
+ {% endfor %}     
+</table>
 </div>
+  </div>     
+  </div>
+  </div>
 
-
+<!-- end tab -->
+</div>
 {% endblock %}
 
 

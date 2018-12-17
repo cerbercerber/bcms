@@ -199,6 +199,8 @@ class UE(BasicModel):
         return 'UE/'+str(self.id)
     def nommodele(self):
         return 'UE'
+    def get_cours(self):
+        return Cours.objects.filter(groupes__ue__id=self.id).all() 
 
 class UEFilieres(models.Model):  
     ue=models.ForeignKey(UE,on_delete=models.PROTECT)
@@ -269,6 +271,20 @@ class Cours(models.Model):
     datefin=models.DateTimeField()
     #duplication=models.BooleanField()
     #history = HistoricalRecords()
+    def get_date_cours(self):
+        ddb=self.datedebut.strftime('%d-%m-%Y')
+        if ddb != self.datefin.strftime('%d-%m-%Y'):ddb=ddb+"-"+self.datefin.strftime('%d-%m-%Y')
+        return ddb
+    def get_heure_debut(self):
+        return self.datedebut.strftime('%H:%M')
+    def get_heure_fin(self):
+        return self.datefin.strftime('%H:%M')
+    def get_groupes(self):
+        str="";
+        for eg in self.groupes.all() :
+            str=str+eg.ue.nom +" "+eg.nom
+            str=str+" "
+        return str;
     def __str__(self): 
         str="";  
         str=str+" groupes :"     
@@ -283,7 +299,7 @@ class Cours(models.Model):
         else : 
             str=str+" "+self.datedebut.strftime('%d-%m-%Y')+"\r\n "+self.datefin.strftime('%H:%M')+"-"+self.datefin.strftime('%H:%M')
         return str
-               
+                    
     def verifResaSalle(self):
         datedebutcours=self.datedebut
         datefincours=self.datefin
@@ -356,16 +372,35 @@ class Devoir(models.Model):
     EXO = 'EXO'
     ORA = 'ORA'
     TYPE_DEVOIR = ((EXO, 'Exercices'),(ORA, 'Oral'),)
-    
+        
     cours=models.ForeignKey(Cours,on_delete=models.CASCADE,null=True, blank=True)
     type= models.CharField(max_length=3,choices=TYPE_DEVOIR,default=EXO,)
+    texte=models.CharField(max_length=1000,null=True)
+
+class Controle(models.Model):  
+    EXO = 'EXO'
+    ORA = 'ORA'
+    TYPE_CONTROLE = ((EXO, 'Ecrit'),(ORA, 'Oral'),)       
+    cours=models.ForeignKey(Cours,on_delete=models.CASCADE,null=True, blank=True)
+    type= models.CharField(max_length=3,choices=TYPE_CONTROLE,default=EXO,)
+    bareme=models.IntegerField(default=20)
+    classant=models.BooleanField(default=True)
+    texte=models.CharField(max_length=1000,null=True)
  
+class Note(models.Model):  
+    controle=models.ForeignKey(Controle,on_delete=models.CASCADE)
+    eleve=models.ForeignKey(Eleve,on_delete=models.CASCADE) 
+    note=models.FloatField(null=True, blank=True, default=None)
+    absence=models.BooleanField(default=False)
+    def get_bareme(self):
+        return self.controle.bareme
+    
 class Absence(models.Model):  
     JUSTI = 'JUSTI'
     PASJU = 'PASJU'
-    TYPE_ABSENCE = ((JUSTI, 'Justifié'),(PASJU, 'Pas justifié'),)
-    
+    TYPE_ABSENCE = ((JUSTI, 'Justifié'),(PASJU, 'Pas justifié'),)   
     cours=models.ForeignKey(Cours,on_delete=models.CASCADE)
     eleve=models.ForeignKey(Eleve,on_delete=models.CASCADE)
     type= models.CharField(max_length=5,choices=TYPE_ABSENCE,default=PASJU,)  
+    texte=models.CharField(max_length=300,null=True)
     #history = HistoricalRecords()

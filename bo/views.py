@@ -361,18 +361,13 @@ def saveFormset(request,formset):
             for key,value in tempform.errors.items():
                 messages.error(request,str(tempform.instance.nommodele())+" "+str(numformset)+" : "+key+" "+ value.as_text())
         return False                      
-                         
-def administratifliste(request,modele=None):
-    
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='administratif').exists() :
-            
-            #
+
+def administratifaccueil(request):
+     if request.user.is_authenticated:
+        if request.user.groups.filter(name='administratif').exists() :                        #
             listhisto=[]
             h=None
-            if modele is None :
-            
-                try :
+            try :
                     #################
                     #onglet eleeve
                     #################
@@ -413,10 +408,15 @@ def administratifliste(request,modele=None):
                         hfil=h.diplome
                         if hfil :
                             listhisto.append({"reason" :h.history_change_reason + " filiere" ,"user":h.history_user,"modele":hfil.nommodele,"link":hfil.nommodeledb, "info" : str(hfil),"date": h.history_date.strftime("%d-%m-%Y %H:%M:%S")})
-                except Exception:  None   
-            #if request.POST.get("modele") is not None :
-            #    modele=request.POST.get("modele");
+            except Exception:  None  
             
+            return render(request, 'bo/administratifaccueil.html',{"listhisto":listhisto})             
+                         
+def administratifliste(request,modele=None):
+    
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='administratif').exists() :
+                                            
             formFilter="";
             #
             #determination modele et filtre
@@ -490,8 +490,7 @@ def administratifliste(request,modele=None):
             return render(request, 'bo/administratifliste.html',{                                                                                                                                                                        
                                                          "modele":modele,
                                                          "modeleliste" : modeleliste,
-                                                         "formFilter":formFilter, 
-                                                         "listhisto":listhisto                                                                                                                                                                                                                        
+                                                         "formFilter":formFilter                                                                                                                                                                                                                                                                              
                                                          }) 
                                                                       
     #else:
@@ -772,6 +771,47 @@ def administratifdetail(request,oid=None,modele=None,mode=None):
                                 listeformset1.append({'titre':annsco.nom ,'formset':formsethtmltemp,"mode":extra})                   
                     listelistefs.append({'titre':"Inscriptions","listformset":listeformset1,'numtab':"4"}); 
                 
+                elif modele=="cours" :
+                    if  request.POST.get('Ajouter2')  : extra=1  
+                    else : extra=0   
+                    DevoirFormset = inlineformset_factory(Cours, Devoir, fields=('texte',),form=DevoirForm,extra=extra)                         
+                    if request.POST.get('Enregistrer2') :
+                        inlineformset1 = DevoirFormset(request.POST,instance=grfound)
+                        if saveFormset(request,inlineformset1) :
+                            inlineformset1 = DevoirFormset(request.POST,instance=grfound)
+                    else :
+                        inlineformset1 = DevoirFormset(instance=grfound)                                     
+                    listefs.append({'titre':"Devoirs","formset":inlineformset1,'numtab':"2","mode":extra})
+                    
+                    if  request.POST.get('Ajouter3')  : extra=1  
+                    else : extra=0                                                    
+                    ControleFormset = inlineformset_factory(Cours, Controle, fields=('type','classant','texte',),form=ControleForm,extra=extra)       
+                    if  request.POST.get('Enregistrer3') :                      
+                        inlineformset2 = ControleFormset(request.POST,instance=grfound)
+                        if saveFormset(request,inlineformset2) :
+                            inlineformset2 = ControleFormset(instance=grfound)    
+                    else :
+                        inlineformset2 = ControleFormset(instance=grfound)                    
+                    listefs.append({'titre':"Controles","formset":inlineformset2,'numtab':"3","mode":extra});
+                    
+                    for cont in Controle.objects.filter(cours__id=grfound.id) :
+                                tempprefix="contel" +str(cont.id)
+                                #if  request.POST.get('Ajouter4') and  request.POST.get('prefix')==tempprefix  : extra=1  
+                                #else : extra=0   
+                                extra=0;
+                                for grcont in cont.cours.groupes.all():               
+                                    extra=extra+Inscription.objects.filter(groupe__id=grcont.id).count()
+                                max_num=extra
+                                #extra=20    
+                                NoteFormset = inlineformset_factory(Controle, Note, fields=('eleve','note',),form=NoteForm,extra=extra,max_num=max_num)                                     
+                                if  request.POST.get('Enregistrer4') and  request.POST.get('prefix')==tempprefix  :                                                                       
+                                    formsethtmltemp = NoteFormset(request.POST,instance=cont,prefix=tempprefix,queryset=Note.objects.filter(controle__id=cont.id))
+                                    if saveFormset(request,formsethtmltemp) :
+                                        formsethtmltemp = NoteFormset(instance=cont,prefix=tempprefix,queryset=Note.objects.filter(controle__id=cont.id))                                                                    
+                                else :                                  
+                                    formsethtmltemp = NoteFormset(instance=cont,prefix=tempprefix)                                                        
+                                listeformset1.append({'titre':cont.texte ,'formset':formsethtmltemp,"mode":extra})                   
+                    listelistefs.append({'titre':"Notes","listformset":listeformset1,'numtab':"4"});    
                 
                 elif modele=="UE" :
                     

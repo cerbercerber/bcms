@@ -34,6 +34,7 @@
         
 </head>   
 <body>
+<input type="hidden" name="modedt" id="modedt" value="edt">
 <!-- MODAL ERROR-->
 <div class="modal" id="modalerror" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -94,9 +95,9 @@
       <li class="nav-item"><a class="nav-link" href="#">{% block espace %} {% endblock %} <span class="sr-only">(current)</span></a></li>
        <li class="nav-item"><a class="nav-link" id="home-tab" data-toggle="tab" href="#inscriptions" role="tab" aria-controls="inscriptions">Inscriptions<span class="sr-only">(current)</span></a></li>
        <li class="nav-item"><a class="nav-link"  id="edt-tab" data-toggle="tab" href="#edt" role="tab" aria-controls="edt">Emploi du temps<span class="sr-only">(current)</span></a></li>
-       <li class="nav-item"><a class="nav-link" id="devoirs-tab" data-toggle="tab" href="#devoirs" role="tab" aria-controls="devoirs" >Devoirs<span class="sr-only">(current)</span></a></li>
-       <li class="nav-item"><a class="nav-link" href="#">Controle<span class="sr-only">(current)</span></a></li>
-       <li class="nav-item"><a class="nav-link" href="#">Notes<span class="sr-only">(current)</span></a></li>
+       <li class="nav-item"><a class="nav-link" id="devoirs-tab" data-toggle="tab" href="#edt" role="tab" aria-controls="devoirs" >Devoirs<span class="sr-only">(current)</span></a></li>
+       <li class="nav-item"><a class="nav-link" id="controle-tab" data-toggle="tab" href="#edt" role="tab" aria-controls="controle">Controle<span class="sr-only">(current)</span></a></li>
+       <li class="nav-item"><a class="nav-link"  id="note-tab" data-toggle="tab" href="#note" role="tab" aria-controls="note">Notes<span class="sr-only">(current)</span></a></li>
       </ul>
       <ul class=" navbar-nav  ml-auto">
       <li class="nav-item dropdown">
