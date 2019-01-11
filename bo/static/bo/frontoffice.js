@@ -7,7 +7,7 @@ function dispModal(idcours) {
         
       //  if(event.isinmoodle)
       
-       $('#modalResa').load('/bo/administratifedtresa/'+idcours, function() {
+       $('#modalResa').load('/bo/administratifedtresa/'+idcours,{modele:$("#admmod").val(), oid:$("#admoid").val()}, function() {
         //alert( "Load was performed." );
         $('#modalResa').modal('show');
         });
@@ -311,6 +311,7 @@ $('#calendart').fullCalendar({
     maxTime : "21:00:00",
     height:'auto',
     locale: 'fr',
+     lazyFetching:false,
     //clic sur la crois suppression
     eventRender: function(event, element) {
         element.append( "<a href='#' class='btn closeon'><i class='fas fa-times-circle text-danger'></i></a>" );
@@ -327,6 +328,10 @@ $('#calendart').fullCalendar({
             
          
         });
+    },
+    viewRender: function (view, element) {
+    //alert("ok");
+     oTable.ajax.reload();
     },
    loading: function (bool) { 
                     if (bool) 
@@ -365,15 +370,6 @@ $('#calendart').fullCalendar({
                             if (mode == "liste") {$(this).attr("mode","cal");$(this).html("<i class='fas fa-arrow-circle-down'></i> Calendrier"); $("#calendartablediv").show();$("#calendart").hide();}
                             else /*if (mode == "cal")*/  {$(this).attr("mode","liste");$(this).html("<i class='fas fa-arrow-circle-down'></i> Liste"); $("#calendartablediv").hide();$("#calendart").show();}
                          });
-                         oTable.ajax.reload();
-                      //reload table avec Dates
-                     /* $(".fc-left button[aria-label='next']").on('click', function(e)
-                         {
-                            //console.log("click left button");                      
-                            oTable.ajax.reload();
-                          });
-                          
-                     */
                       $(".fc-right").find('h2').replaceWith(function() {
                             return '<h2 style="font-size:1rem;padding-top:6px">' + $(this).text() + '</span></h2>';
                             });

@@ -81,7 +81,11 @@ $('#calendarel').fullCalendar({
     maxTime : "21:00:00",
     height:'auto',
     locale: 'fr',
-    /*lazyFetching:false,*/
+    lazyFetching:false,
+      viewRender: function (view, element) {
+    //alert("ok");
+     oTable.ajax.reload();
+    },
     loading: function (bool) {               
                     if (!bool)
                       {                                   
@@ -102,8 +106,7 @@ $('#calendarel').fullCalendar({
                             var mode=$(this).attr("mode");
                             if (mode == "liste") {$(this).attr("mode","cal");$(this).html("Calendrier"); $("#calendartablediv").show();$("#calendarel").hide();}
                             else /*if (mode == "cal")*/  {$(this).attr("mode","liste");$(this).html("Liste"); $("#calendartablediv").hide();$("#calendarel").show();$('#calendarel').fullCalendar('refetchEvents');}
-                         });
-                         /*if (oTable)*/ oTable.ajax.reload();       
+                         });  
                       }
                 else
                     {

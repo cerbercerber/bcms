@@ -195,8 +195,16 @@ def edtresa(request,idcours):
       if idcours is not 0 :         
          instcours=Cours.objects.get(id=idcours)       
          cf=CoursForm(instance=instcours)
-      else :         
-         cf=CoursForm
+      else :
+         #recup groupes par défaut
+         if request.POST.get("modele")=="UE" :
+             uesel=UE.objects.get(id=request.POST.get("oid"))  
+             nbgroupes=Groupe.objects.filter(ue=uesel).count()
+             if nbgroupes==1 :        
+                 cf=CoursForm(initial={'groupes': Groupe.objects.first() }) 
+             else : cf=CoursForm          
+         else :      
+             cf=CoursForm
               
       return render(request, 'bo/administratifresa.html', {"coursform":cf, "idcours":idcours})  
   

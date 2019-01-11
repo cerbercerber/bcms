@@ -205,6 +205,8 @@ class UE(BasicModel):
 class UEFilieres(models.Model):  
     ue=models.ForeignKey(UE,on_delete=models.PROTECT)
     filiere=models.ForeignKey(Filiere,on_delete=models.PROTECT)
+    def nommodele(self):
+        return 'filiere'
     #history = HistoricalRecords()
     
 
