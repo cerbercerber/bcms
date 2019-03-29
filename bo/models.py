@@ -373,7 +373,7 @@ class CoursSalles(models.Model):
 class Devoir(models.Model):  
     EXO = 'EXO'
     ORA = 'ORA'
-    TYPE_DEVOIR = ((EXO, 'Exercices'),(ORA, 'Oral'),)
+    TYPE_DEVOIR = ((EXO, 'Exercicehhhs'),(ORA, 'Oral'),)
         
     cours=models.ForeignKey(Cours,on_delete=models.CASCADE,null=True, blank=True)
     type= models.CharField(max_length=3,choices=TYPE_DEVOIR,default=EXO,)
