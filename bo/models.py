@@ -371,7 +371,7 @@ class CoursSalles(models.Model):
     salle=models.ForeignKey(Salle,on_delete=models.CASCADE)
     
 class Devoir(models.Model):  
-    EXO = 'EXO'
+    EXO = 'EXOTT'
     ORA = 'ORA'
     TYPE_DEVOIR = ((EXO, 'Exercicehhhs'),(ORA, 'Oral'),)
         
